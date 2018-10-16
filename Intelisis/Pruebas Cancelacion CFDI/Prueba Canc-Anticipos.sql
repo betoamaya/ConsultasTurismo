@@ -32,8 +32,8 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                               --
                               @Observaciones = 'PAGADO',
                               @Comentarios = 'TAMAN - CUAUHTEMOC|CJORTGC11062018133218',
                               @Partidas = NULL,                               -- varchar(max)
-                              @ID = @ID OUTPUT,                               -- int
-                              @MovID = @MovID OUTPUT,                         -- varchar(max)
+                              @ID = @Id OUTPUT,                               -- int
+                              @MovID = @MovId OUTPUT,                         -- varchar(max)
                               @Estatus = @Estatus OUTPUT,                     -- char(15)
                               @CFDFlexEstatus = @CFDFlexEstatus OUTPUT,       -- varchar(15)
                               @CFDXml = @CFDXml OUTPUT,                       -- varchar(max)
@@ -45,8 +45,8 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                               --
                               @FechaTimbrado = @FechaTimbrado OUTPUT,         -- varchar(max)
                               @noCertificadoSAT = @noCertificadoSAT OUTPUT;   -- varchar(max)
 
-SELECT @ID,
-       @MovID,
+SELECT @Id,
+       @MovId,
        @Estatus,
        @CFDFlexEstatus,
        @CFDXml,
@@ -67,8 +67,11 @@ SELECT @ID,
 SELECT *
 FROM dbo.CFD AS c
 WHERE c.MovID = 'TVE138510';
+
+/**Actualizar UUID***/
+
 UPDATE dbo.CFD
-SET UUID = 'E329DD15-7D0B-44E9-A204-51A7443D1FBE'
+SET UUID = '7F62287C-A488-4ECD-8776-6BAD109271CC'
 WHERE MovID = 'TVE138510';
 
 
@@ -77,18 +80,18 @@ DECLARE @Id INT,
         @MovId VARCHAR(20),
         @Estatus VARCHAR(15),
         @Importe MONEY;
-EXEC dbo.Interfaz_AnticiposCancelar @IDIntelisis = 427689,           -- int
-                                    @MovIdIntelisis = 'TVE138510',       -- varchar(20)
-                                    @Usuario = 'SITTI',              -- char(10)
-                                    @Id = @Id OUTPUT,           -- int
-                                    @MovId = @MovId OUTPUT,     -- varchar(20)
-                                    @Estatus = @Estatus OUTPUT, -- varchar(15)
-                                    @Importe = @Importe OUTPUT  -- money
+EXEC dbo.Interfaz_AnticiposCancelar @IDIntelisis = 427689,         -- int
+                                    @MovIdIntelisis = 'TVE138510', -- varchar(20)
+                                    @Usuario = 'SITTI',            -- char(10)
+                                    @Id = @Id OUTPUT,              -- int
+                                    @MovId = @MovId OUTPUT,        -- varchar(20)
+                                    @Estatus = @Estatus OUTPUT,    -- varchar(15)
+                                    @Importe = @Importe OUTPUT;    -- money
 
 SELECT @Id,
-        @MovId,
-        @Estatus,
-        @Importe;
+       @MovId,
+       @Estatus,
+       @Importe;
 
 /*
 Resultado de Validacion General: 
@@ -101,4 +104,26 @@ Error al aplicar el movimiento de Intelisis: Error = 71650, Mensaje = Error al t
 
 (1 fila afectada)
 
+*/
+
+/*
+Resultado de Validacion General: 
+Cancelando el movimiento: 427689
+Termino ***
+Retorno SPAfectar: 204 El CFDI no aplica para cancelación.
+Codigo de Resultado: 204 El CFDI no aplica para cancelación.
+Mensaje 50000, nivel 16, estado 1, procedimiento Interfaz_AnticiposCancelar, línea 129 [línea de inicio de lote 78]
+Error al aplicar el movimiento de Intelisis: Error = 204, Mensaje = El CFDI no aplica para cancelación., el movimiento no fue cancelado. Intente nuevamente.
+
+(1 fila afectada)
+*/
+
+--71650	<IntelisisCFDI><Error></Error><Descripcion>[Servidor de pruebas] Ocurrió un error al procesar la solicitud. IdError: testing-a0abaa86-01cc-49db-9938-bda17c611e9c</Descripcion></IntelisisCFDI >
+
+--Resultado Ok
+/*
+======================================
+ID		MovID		Estatus		Importe
+427689	TVE138510	CANCELADO   800.00
+======================================
 */

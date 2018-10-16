@@ -15,7 +15,7 @@ ALTER PROCEDURE [dbo].[Interfaz_AnticiposCancelar]
     @Estatus AS VARCHAR(15) = NULL OUTPUT,
     @Importe AS MONEY = NULL OUTPUT,
     @iError AS INT = NULL OUTPUT,
-    @sError AS VARCHAR(MAX) = NULL
+    @sError AS VARCHAR(MAX) = NULL OUTPUT
 AS
 SET NOCOUNT ON;
 -- *************************************************************************

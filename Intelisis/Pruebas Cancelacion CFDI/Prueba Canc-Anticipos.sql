@@ -19,7 +19,7 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                               --
                               @Moneda = 'Pesos',                              -- char(10)
                               @TipoCambio = 1.0,
                               @Usuario = 'SITTI',
-                              @Codigo = 'PRUEBA-000001-ANTI',
+                              @Codigo = 'PRUEBA-000002-ANTI',
                               @Referencia = 'VIAJES COBRADOS X ANT. PAG. 004995G-C',
                               @Cliente = '74730',
                               @Sucursal = 0,
@@ -62,8 +62,9 @@ SELECT @Id,
 --Resultado
 --ID		MovID		Estatus		CFDFlexEstatus	UUID									FechaTimbrado
 --427689	TVE138510	PENDIENTE	CONCLUIDO		7F62287C-A488-4ECD-8776-6BAD109271CC	2018-10-16 11:42:19.000
+--427702	TVE138513	PENDIENTE	CONCLUIDO		292823C6-3E1B-478C-B720-7B529B7420CF	2018-10-16 14:38:57.000
 /*============================================*/
-/***204 - El comprobante no se puede cancelar***/
+/***214 - El comprobante no se puede cancelar***/
 SELECT *
 FROM dbo.CFD AS c
 WHERE c.MovID = 'TVE138510';
@@ -71,27 +72,35 @@ WHERE c.MovID = 'TVE138510';
 /**Actualizar UUID***/
 
 UPDATE dbo.CFD
-SET UUID = '7F62287C-A488-4ECD-8776-6BAD109271CC'
-WHERE MovID = 'TVE138510';
+SET UUID = 'C5E58106-6C1E-41C9-A211-FB8BAD1CABB0'
+WHERE MovID = 'TVE138513';
 
 
 /***CANCELAR****/
+
+
 DECLARE @Id INT,
         @MovId VARCHAR(20),
         @Estatus VARCHAR(15),
-        @Importe MONEY;
-EXEC dbo.Interfaz_AnticiposCancelar @IDIntelisis = 427689,         -- int
-                                    @MovIdIntelisis = 'TVE138510', -- varchar(20)
-                                    @Usuario = 'SITTI',            -- char(10)
-                                    @Id = @Id OUTPUT,              -- int
-                                    @MovId = @MovId OUTPUT,        -- varchar(20)
-                                    @Estatus = @Estatus OUTPUT,    -- varchar(15)
-                                    @Importe = @Importe OUTPUT;    -- money
-
+        @Importe MONEY,
+        @iError INT,
+        @sError VARCHAR(MAX);
+EXEC dbo.Interfaz_AnticiposCancelar @IDIntelisis = 427702,         -- int
+                                    @MovIdIntelisis = 'TVE138513', -- varchar(20)
+                                    @Usuario = 'SITTI',              -- char(10)
+                                    @Id = @Id OUTPUT,           -- int
+                                    @MovId = @MovId OUTPUT,     -- varchar(20)
+                                    @Estatus = @Estatus OUTPUT, -- varchar(15)
+                                    @Importe = @Importe OUTPUT, -- money
+                                    @iError = @iError OUTPUT,   -- int
+                                    @sError = @sError OUTPUT;    -- varchar(max)
 SELECT @Id,
-       @MovId,
-       @Estatus,
-       @Importe;
+        @MovId,
+        @Estatus,
+        @Importe,
+        @iError,
+        @sError;
+             
 
 /*
 Resultado de Validacion General: 
@@ -120,10 +129,23 @@ Error al aplicar el movimiento de Intelisis: Error = 204, Mensaje = El CFDI no a
 
 --71650	<IntelisisCFDI><Error></Error><Descripcion>[Servidor de pruebas] Ocurrió un error al procesar la solicitud. IdError: testing-a0abaa86-01cc-49db-9938-bda17c611e9c</Descripcion></IntelisisCFDI >
 
+/*
+Resultado de Validacion General: 
+Cancelando el movimiento: 427702
+Termino ***
+Retorno SPAfectar: 211 La cancelación está en proceso.
+Codigo de Resultado: 211 La cancelación está en proceso.
+Mensaje 50000, nivel 16, estado 1, procedimiento Interfaz_AnticiposCancelar, línea 141 [línea de inicio de lote 81]
+La cancelación está en proceso.
+
+(1 fila afectada)
+*/
+
 --Resultado Ok
 /*
 ======================================
-ID		MovID		Estatus		Importe
+ID		MovID		Estatus		Importe	iError	sError
 427689	TVE138510	CANCELADO   800.00
+427702	TVE138513	PENDIENTE	800.00	211		La cancelación está en proceso.
 ======================================
 */

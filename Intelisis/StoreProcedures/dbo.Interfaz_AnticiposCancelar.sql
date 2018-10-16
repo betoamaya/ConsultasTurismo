@@ -10,12 +10,11 @@ ALTER PROCEDURE [dbo].[Interfaz_AnticiposCancelar]
     @IDIntelisis AS INT,
     @MovIdIntelisis AS VARCHAR(20),
     @Usuario AS CHAR(10),
-    @Id AS INT = NULL OUTPUT,
+    @iError AS INT = NULL OUTPUT,
+    @sError AS VARCHAR(MAX) = NULL OUTPUT,
     @MovId AS VARCHAR(20) = NULL OUTPUT,
     @Estatus AS VARCHAR(15) = NULL OUTPUT,
-    @Importe AS MONEY = NULL OUTPUT,
-    @iError AS INT = NULL OUTPUT,
-    @sError AS VARCHAR(MAX) = NULL OUTPUT
+    @Importe AS MONEY = NULL OUTPUT
 AS
 SET NOCOUNT ON;
 -- *************************************************************************
@@ -42,10 +41,10 @@ EXEC dbo.Interfaz_LogsInsertar @SP = 'Interfaz_AnticiposCancelar', -- varchar(25
 -- *************************************************************************
 --	Validaciones
 -- *************************************************************************
-SET @sError = NULL;
 IF (@Usuario IS NULL OR RTRIM(LTRIM(@Usuario)) = '')
 BEGIN
-    SET @sError = 'Usuario no indicado. Por favor, indique un Usuario.';
+    SELECT @iError = 1,
+           @sError = 'Usuario no indicado. Por favor, indique un Usuario.';
 END;
 
 IF NOT EXISTS
@@ -55,7 +54,8 @@ IF NOT EXISTS
     WHERE RTRIM(LTRIM(Usuario)) = RTRIM(LTRIM(@Usuario))
 )
 BEGIN
-    SET @sError = 'Usuario no encontrado. Por favor, indique un Usuario valido de Intelisis.';
+    SELECT @iError = 1,
+           @sError = 'Usuario no encontrado. Por favor, indique un Usuario valido de Intelisis.';
 END;
 
 IF NOT EXISTS
@@ -67,7 +67,8 @@ IF NOT EXISTS
           AND Mov IN ( 'CFD Anticipo', 'Cobro TransInd', 'Cobro VE Gravado' )
 )
 BEGIN
-    SET @sError = 'El tipo de Movimiento, no se encuentra en el catalogo de movimientos validos para cancelar.';
+    SELECT @iError = 1,
+           @sError = 'El tipo de Movimiento, no se encuentra en el catalogo de movimientos validos para cancelar.';
 END;
 
 IF NOT EXISTS
@@ -78,7 +79,8 @@ IF NOT EXISTS
           AND MovID = @MovIdIntelisis
 )
 BEGIN
-    SET @sError = 'Movimiento no encontrado. Por favor, indique un Movimento valido.';
+    SELECT @iError = 1,
+           @sError = 'Movimiento no encontrado. Por favor, indique un Movimento valido.';
 END;
 
 PRINT 'Resultado de Validacion General: ' + RTRIM(ISNULL(@sError, ' '));
@@ -144,22 +146,17 @@ BEGIN
     RAISERROR(@sError, 16, 1);
 --RETURN;
 END;
+ELSE
+BEGIN
+    SELECT @iError = 0,
+           @sError = 'CANCELADO';
+END;
 
 -- *************************************************************************
 --		INFORMACION DE RETORNO
 -- *************************************************************************
 
-SELECT A.ID,
-       A.MovID,
-       A.Estatus,
-       A.Importe,
-       @iError AS iError,
-       @sError AS sError
-FROM Cxc AS A
-WHERE A.ID = @IDIntelisis;
-
-SELECT @Id = A.ID,
-       @MovId = A.MovID,
+SELECT @MovId = A.MovID,
        @Estatus = A.Estatus,
        @Importe = A.Importe
 FROM Cxc AS A

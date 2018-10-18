@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	16/10/2018
+-- Ultimo Cambio:	18/10/2018
 -- Descripción:		Cancelación de Anticipos.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_AnticiposCancelar]
@@ -91,7 +91,7 @@ BEGIN
                                    @DetalleError = @sError,         -- varchar(max)
                                    @Usuario = @Usuario,             -- varchar(10)
                                    @Parametros = @LogParametrosXml; -- xml
-    RAISERROR(@sError, 16, 1);
+    --RAISERROR(@sError, 16, 1);
     RETURN;
 END;
 
@@ -143,7 +143,7 @@ BEGIN
                                    @DetalleError = @sError,         -- varchar(max)
                                    @Usuario = @Usuario,             -- varchar(10)
                                    @Parametros = @LogParametrosXml; -- xml
-    RAISERROR(@sError, 16, 1);
+--RAISERROR(@sError, 16, 1);
 --RETURN;
 END;
 ELSE
@@ -162,4 +162,5 @@ SELECT @MovId = A.MovID,
 FROM Cxc AS A
 WHERE A.ID = @IDIntelisis;
 RETURN;
+
 GO

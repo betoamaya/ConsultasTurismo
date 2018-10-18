@@ -1,6 +1,11 @@
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
+-- =============================================
+-- Responsable:		Roberto Amaya
+-- Ultimo Cambio:	18/10/2018
+-- Descripción:		Cancelación de Venta.
+-- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_VentasCancelar]
     @IDIntelisis AS INT,
     @MovIdIntelisis AS VARCHAR(20),

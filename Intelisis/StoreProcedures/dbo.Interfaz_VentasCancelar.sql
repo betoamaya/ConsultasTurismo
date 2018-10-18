@@ -1,22 +1,7 @@
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
--- =============================================
--- Responsable:		Roberto Amaya
--- Ultimo Cambio:	17/10/2018
--- Descripción:		Cancelación de Facturas de Venta.
--- =============================================
-IF EXISTS
-(
-    SELECT o.name
-    FROM sys.objects AS o
-    WHERE o.name = 'Interfaz_ventasCancelar'
-)
-BEGIN
-    DROP PROCEDURE dbo.Interfaz_ventasCancelar;
-END;
-GO
-CREATE PROCEDURE [dbo].[Interfaz_ventasCancelar]
+ALTER PROCEDURE [dbo].[Interfaz_VentasCancelar]
     @IDIntelisis AS INT,
     @MovIdIntelisis AS VARCHAR(20),
     @Usuario AS CHAR(10),
@@ -101,7 +86,7 @@ BEGIN
                                    @DetalleError = @sError,         -- varchar(max)
                                    @Usuario = @Usuario,             -- varchar(10)
                                    @Parametros = @LogParametrosXml; -- xml
-    RAISERROR(@sError, 16, 1);
+    --RAISERROR(@sError, 16, 1);
     RETURN;
 END;
 
@@ -153,7 +138,7 @@ BEGIN
                                    @DetalleError = @sError,         -- varchar(max)
                                    @Usuario = @Usuario,             -- varchar(10)
                                    @Parametros = @LogParametrosXml; -- xml
-    RAISERROR(@sError, 16, 1);
+--RAISERROR(@sError, 16, 1);
 --RETURN;
 END;
 ELSE
@@ -172,4 +157,5 @@ SELECT @MovId = A.MovID,
 FROM dbo.Venta AS A
 WHERE A.ID = @IDIntelisis;
 RETURN;
+
 GO

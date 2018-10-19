@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	18/10/2018
+-- Ultimo Cambio:	19/10/2018
 -- Descripción:		Cancelación de Venta.
 -- =============================================
-CREATE PROCEDURE [dbo].[Interfaz_VentasCancelar]
+ALTER PROCEDURE [dbo].[Interfaz_VentasCancelar]
     @IDIntelisis AS INT,
     @MovIdIntelisis AS VARCHAR(20),
     @Usuario AS CHAR(10),
@@ -95,12 +95,14 @@ BEGIN
     RETURN;
 END;
 
-/*---HardCode---*/
-IF RTRIM(@MovId) IN ('TVE138529')
+/*---Hard-Code---*/
+IF RTRIM(@MovIdIntelisis) IN ( 'TVE138529' )
 BEGIN
-    SELECT @iError = 213, @sError = 'La solicitud de cancelación fue rechazada por el receptor.';
-	RETURN;
-END
+    PRINT '**/Hard-Code/***';
+    SELECT @iError = 213,
+           @sError = 'La solicitud de cancelación fue rechazada por el receptor.';
+    RETURN;
+END;
 
 -- *************************************************************************
 --	Validaciones

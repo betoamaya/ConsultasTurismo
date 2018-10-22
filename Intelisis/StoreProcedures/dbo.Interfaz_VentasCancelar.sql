@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	19/10/2018
+-- Ultimo Cambio:	22/10/2018
 -- Descripción:		Cancelación de Venta.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_VentasCancelar]
@@ -96,7 +96,7 @@ BEGIN
 END;
 
 /*---Hard-Code---*/
-IF RTRIM(@MovIdIntelisis) IN ( 'TVE138529' )
+IF RTRIM(@MovIdIntelisis) IN ( 'TVE138529', 'TVE138538' )
 BEGIN
     PRINT '**/Hard-Code/***';
     SELECT @iError = 213,

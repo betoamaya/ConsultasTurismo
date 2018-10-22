@@ -64,7 +64,7 @@ IF NOT EXISTS
     FROM dbo.Venta AS v
     WHERE v.ID = @IDIntelisis
           AND v.MovID = @MovIdIntelisis
-          AND v.Mov IN ( 'Fact Otros Ing Cont', 'CFDI SIN VIAJE GRAV' )
+          AND v.Mov IN ( 'Fact Otros Ing Cont', 'CFDI SIN VIAJE GRAV', 'Factura TranspInd' )
 )
 BEGIN
     SELECT @iError = 1,

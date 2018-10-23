@@ -821,7 +821,7 @@ BEGIN
     AND RTRIM(@Mov) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
     BEGIN
         DECLARE @CveCta AS INT;
-        SELECT @CveCta
+        SELECT @CveCta = cnsif.Clave
         FROM dbo.CFDINominaSATInstitucionFin AS cnsif
         WHERE cnsif.Nombre =
         (

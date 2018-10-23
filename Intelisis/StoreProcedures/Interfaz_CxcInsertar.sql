@@ -818,7 +818,7 @@ BEGIN
     (
         SELECT COUNT(*) FROM @T_Partidas AS tp
     ) > 0
-    AND RTRIM(@MovID) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
+    AND RTRIM(@Mov) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
     BEGIN
         DECLARE @CveCta AS INT;
         SELECT @CveCta
@@ -830,13 +830,13 @@ BEGIN
         IF ISNULL(@CveCta, '') <> ''
         BEGIN
             PRINT 'Actualizando CtaBanco de Cliente para complemento de pago';
-UPDATE c
-SET c.CtaBanco = tp.CtaOrdenante,
-    c.ClaveBanco = @CveCta
-FROM @T_Partidas AS tp
-    INNER JOIN dbo.Cte AS c
-        ON c.Cliente = RTRIM(@Cliente)
-WHERE Consecutivo = 1;
+            UPDATE c
+            SET c.CtaBanco = tp.CtaOrdenante,
+                c.ClaveBanco = @CveCta
+            FROM @T_Partidas AS tp
+                INNER JOIN dbo.Cte AS c
+                    ON c.Cliente = RTRIM(@Cliente)
+            WHERE Consecutivo = 1;
         END;
         ELSE
         BEGIN
@@ -1256,7 +1256,7 @@ WHERE Consecutivo = 1;
     (
         SELECT COUNT(*) FROM @T_Partidas AS tp
     ) > 0
-    AND RTRIM(@MovID) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
+    AND RTRIM(@Mov) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
     BEGIN
         PRINT 'Eliminado CtaBanco cliente';
         UPDATE dbo.Cte
@@ -1411,8 +1411,4 @@ WHERE Consecutivo = 1;
         END;
     END;
 END;
-
-
-
-
 GO

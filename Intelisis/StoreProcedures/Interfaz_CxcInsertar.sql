@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	21/08/2018
+-- Ultimo Cambio:	23/10/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
-CREATE PROCEDURE [dbo].[Interfaz_CxcInsertar]
+ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
     @Empresa CHAR(5),
     @Mov CHAR(20),
     @FechaEmision SMALLDATETIME,
@@ -134,7 +134,9 @@ BEGIN
         Consecutivo INT IDENTITY(1, 1) NOT NULL,
         Importe MONEY,
         Aplica CHAR(20),
-        AplicaID VARCHAR(20)
+        AplicaID VARCHAR(20),
+        EmisorCtaOrd VARCHAR(100),
+        CtaOrdenante VARCHAR(50)
     );
 
     DECLARE @X_Partidas XML;
@@ -145,7 +147,9 @@ BEGIN
         INSERT INTO @T_Partidas
         SELECT T.LOC.value('@Importe', 'MONEY') AS Importe,
                T.LOC.value('@Aplica', 'CHAR(20)') AS Aplica,
-               T.LOC.value('@AplicaID', 'VARCHAR(20)') AS AplicaID
+               T.LOC.value('@AplicaID', 'VARCHAR(20)') AS AplicaID,
+               T.LOC.value('@EmisorCtaOrd', 'VARCHAR(20)') AS EmisorCtaOrd,
+               T.LOC.value('@CtaOrdenante', 'VARCHAR(20)') AS CtaOrdenante
         FROM @X_Partidas.nodes('//row/fila') AS T(LOC);
         SELECT TOP 1
             @Aplica = Aplica,
@@ -153,10 +157,7 @@ BEGIN
         FROM @T_Partidas;
     END;
 
-    --IF ( @AplicaID IN ( 'TVE104921', 'TVE104232', 'TVE104231' ) )
-    --    BEGIN
-    --        SELECT  @Aplica = 'CFD Anticipo ServCom';
-    --    END
+
     /* Validación de CODIGO*/
     IF NOT EXISTS
     (
@@ -811,6 +812,42 @@ BEGIN
         PRINT 'Ya existe en CXC ID= ' + CAST(@RegresoID AS VARCHAR) + ' ' + RTRIM(@Mov) + ' '
               + RTRIM(ISNULL(@RegresoMovID, '0'));
     END;
+
+    /*Agregando CtaOrdenante para Complemento de Pago*/
+    IF
+    (
+        SELECT COUNT(*) FROM @T_Partidas AS tp
+    ) > 0
+    AND RTRIM(@MovID) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
+    BEGIN
+        DECLARE @CveCta AS INT;
+        SELECT @CveCta
+        FROM dbo.CFDINominaSATInstitucionFin AS cnsif
+        WHERE cnsif.Nombre =
+        (
+            SELECT TOP 1 RTRIM(tp.EmisorCtaOrd) FROM @T_Partidas AS tp
+        );
+        IF ISNULL(@CveCta, '') <> ''
+        BEGIN
+            PRINT 'Actualizando CtaBanco de Cliente para complemento de pago';
+UPDATE c
+SET c.CtaBanco = tp.CtaOrdenante,
+    c.ClaveBanco = @CveCta
+FROM @T_Partidas AS tp
+    INNER JOIN dbo.Cte AS c
+        ON c.Cliente = RTRIM(@Cliente)
+WHERE Consecutivo = 1;
+        END;
+        ELSE
+        BEGIN
+            PRINT 'Eliminado CtaBanco cliente';
+            UPDATE dbo.Cte
+            SET CtaBanco = NULL,
+                ClaveBanco = NULL
+            WHERE Cliente = RTRIM(@Cliente);
+        END;
+    END;
+
     --********************************************************************
     --		AFECTAR
     --********************************************************************
@@ -1214,6 +1251,19 @@ BEGIN
         END;
     END;
 
+    /*Eliminando CtaOrdenante para Complemento de Pago*/
+    IF
+    (
+        SELECT COUNT(*) FROM @T_Partidas AS tp
+    ) > 0
+    AND RTRIM(@MovID) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
+    BEGIN
+        PRINT 'Eliminado CtaBanco cliente';
+        UPDATE dbo.Cte
+        SET CtaBanco = NULL,
+            ClaveBanco = NULL
+        WHERE Cliente = RTRIM(@Cliente);
+    END;
     --********************************************************************
     --		INFORMACION DE RETORNO
     --********************************************************************

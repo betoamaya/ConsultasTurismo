@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	23/10/2018
+-- Ultimo Cambio:	25/10/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -830,6 +830,7 @@ BEGIN
         IF ISNULL(@CveCta, '') <> ''
         BEGIN
             PRINT 'Actualizando CtaBanco de Cliente para complemento de pago';
+            PRINT @CveCta;
             UPDATE c
             SET c.CtaBanco = tp.CtaOrdenante,
                 c.ClaveBanco = @CveCta
@@ -837,6 +838,12 @@ BEGIN
                 INNER JOIN dbo.Cte AS c
                     ON c.Cliente = RTRIM(@Cliente)
             WHERE Consecutivo = 1;
+        /*
+            SELECT c.Cliente, c.CtaBanco,
+                   c.ClaveBanco
+            FROM dbo.Cte AS c
+            WHERE c.Cliente = RTRIM(@Cliente);
+			*/
         END;
         ELSE
         BEGIN
@@ -1251,19 +1258,6 @@ BEGIN
         END;
     END;
 
-    /*Eliminando CtaOrdenante para Complemento de Pago*/
-    IF
-    (
-        SELECT COUNT(*) FROM @T_Partidas AS tp
-    ) > 0
-    AND RTRIM(@Mov) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
-    BEGIN
-        PRINT 'Eliminado CtaBanco cliente';
-        UPDATE dbo.Cte
-        SET CtaBanco = NULL,
-            ClaveBanco = NULL
-        WHERE Cliente = RTRIM(@Cliente);
-    END;
     --********************************************************************
     --		INFORMACION DE RETORNO
     --********************************************************************

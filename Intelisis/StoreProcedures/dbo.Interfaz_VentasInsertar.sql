@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	21/08/2018
+-- Ultimo Cambio:	31/10/2018
 -- Descripción:		Insersión y afectación de facturas de credito y venta.
 -- =============================================
-CREATE PROCEDURE [dbo].[Interfaz_VentasInsertar]
+ALTER PROCEDURE [dbo].[Interfaz_VentasInsertar]
     @Empresa AS CHAR(5),
     @Mov AS CHAR(20),
     @FechaEmision AS SMALLDATETIME,
@@ -287,7 +287,7 @@ BEGIN
         END;
     END;
 
-    /*   ***'FACT.VE.GRAVADO'***   */
+    /*   ***'Factura TranspInd'***   */
     IF (@Mov = 'Factura TranspInd')
     BEGIN
         SET @bMovValido = 1;
@@ -765,6 +765,34 @@ BEGIN
                 INNER JOIN @T_MovRelacionados ta
                     ON ta.ID = v.ID;
         END;
+        /*Caso Refacturacion TI y VE*/
+        IF @Mov IN ( 'Factura TranspInd', 'FACT.VE.GRAVADO' )
+           AND ISNULL(@MovRelacionados, '') <> ''
+        BEGIN
+            PRINT 'Relacionando la factura por sutitución';
+            INSERT INTO dbo.VentaOrigenDevolucion
+            (
+                Empresa,
+                Modulo,
+                Id,
+                ModuloOrigen,
+                IdOrigen,
+                MovOrigen,
+                MovIDOrigen,
+				ClaveTipoRelacion
+            )
+            SELECT @Empresa,
+                   'VTAS',
+                   @RegresoID,
+                   'VTAS',
+                   v.ID,
+                   v.Mov,
+                   v.MovID,
+				   '04' --Tipo Relación
+            FROM dbo.Venta v
+                INNER JOIN @T_MovRelacionados ta
+                    ON ta.ID = v.ID;
+        END;
     END;
     ELSE
     BEGIN
@@ -964,7 +992,4 @@ BEGIN
                AND c.ModuloID = v.ID
     WHERE v.ID = @RegresoID;
 END;
-
-
-
 GO

@@ -559,7 +559,7 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Importe de aplicación no valido. El importe de aplicación indicado es menor al importe del movimiento. '
-                          + 'Por favor, indique un Concepto valido para esta combinación de movimiento y usuario.';
+                          + 'Por favor, verifique el importe.';
                 END;
             END;
             ELSE

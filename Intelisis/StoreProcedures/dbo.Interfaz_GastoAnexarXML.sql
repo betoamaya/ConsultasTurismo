@@ -1,6 +1,11 @@
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
+-- =============================================
+-- Responsable:		Roberto Amaya
+-- Ultimo Cambio:	31/10/2018
+-- Descripción:		Anexar XML
+-- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_GastoAnexarXML]
     @Usuario CHAR(10),
     @Id INT,

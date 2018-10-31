@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	25/10/2018
+-- Ultimo Cambio:	31/10/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -230,7 +230,7 @@ BEGIN
         IF (@Mov IN ( 'Cobro SIVE', 'Cobro TransInd', 'Cobro VE Gravado', 'Cobro Paquete', 'Bonificación TI',
                       'Bonificación SIVE', 'BONIFICACION VE GRAV', 'Devolucion Paquete', 'Devolucion Gravada',
                       'Devolucion', 'Nota Credito SIVE', 'Nota Credito TransIn', 'NOTA CREDITO VE GRAV',
-                      'CANCELACION TURISMO'
+                      'CANCELACION TURISMO', 'REF CANCELACION TUR'
                     )
            )
         BEGIN
@@ -541,7 +541,7 @@ BEGIN
         END;
 
         --	***	'CANCELACION TURISMO' ***
-        IF (@Mov IN ( 'CANCELACION TURISMO' ))
+        IF (@Mov IN ( 'CANCELACION TURISMO', 'REF CANCELACION TUR' ))
         BEGIN
             SET @bMovValido = 1;
             IF (@Usuario = 'SITTI')
@@ -639,7 +639,7 @@ BEGIN
 
         IF (@Mov NOT IN ( 'DEV.SALDO', 'Devolucion', 'Devolucion Gravada', 'Devolucion Saldo', 'Devolucion Paquete',
                           'Cobro SIVE', 'Cobro Paquete', 'Cobro TransInd', 'Cobro VE Gravado', 'CANCELACION TURISMO',
-                          'Bonificación TI', 'BONIFICACION VE GRAV'
+                          'REF CANCELACION TUR', 'Bonificación TI', 'BONIFICACION VE GRAV'
                         )
            )
         BEGIN
@@ -757,7 +757,7 @@ BEGIN
         --	*****	SE INSERTAN EL DETALLE EN CXCD	*****
         IF @Mov IN ( 'Bonificación TI', 'BONIFICACION VE GRAV', 'Cobro SIVE', 'Cobro TransInd', 'Cobro Paquete',
                      'Cobro VE Gravado', 'Devolucion', 'Devolucion Gravada', 'Devolucion Paquete', 'DEV.SALDO',
-                     'CANCELACION TURISMO'
+                     'CANCELACION TURISMO', 'REF CANCELACION TUR'
                    )
         BEGIN
             PRINT 'Caso Cobros Bonificaciones y Cancelaciones';
@@ -1405,4 +1405,5 @@ BEGIN
         END;
     END;
 END;
+
 GO

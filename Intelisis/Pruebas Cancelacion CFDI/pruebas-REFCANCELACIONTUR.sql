@@ -54,3 +54,32 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                                 
 ---------------------------------------------------
 --427882	1			CONCLUIDO	NULL
 /*============================================*/
+
+/*Nueva Factura*/
+
+EXEC dbo.Interfaz_VentasInsertar @Empresa = 'TUN',                                     -- char(5)
+                                 @Mov = 'Factura TranspInd',                           -- char(20)
+                                 @FechaEmision = '2018-10-30T16:07:00',                -- smalldatetime
+                                 @Concepto = 'T.INDUSTRIAL 15%',                       -- varchar(50)
+                                 @Moneda = 'Pesos',                                    -- char(10)
+                                 @TipoCambio = 1.0,                                    -- float
+                                 @Usuario = 'SITTI',                                   -- char(10)
+                                 @Referencia = ' - ',                                  -- varchar(50)
+                                 @Codigo = 'Prueba-00013-CRED',                        -- varchar(30)
+                                 @Cliente = '8365',                                    -- char(10)
+                                 @Sucursal = 1,                                        -- int
+                                 @Vencimiento = '2018-12-29T16:07:00',                 -- smalldatetime
+                                 @Importe = 800,                                       -- money
+                                 @Impuestos = 128,                                     -- money
+                                 @CentroDeCostos = 'P1012',                            -- varchar(20)
+                                 @TipoPago = 'NO IDENTIFICADO',                        -- varchar(50)
+                                 @Observaciones = '',                                  -- varchar(100)
+                                 @Comentarios = ' - ',                                 -- varchar(max)
+                                 @PartidasVtas = '',                                   -- varchar(max)
+                                 @MovRelacionados = '<row><fila ID="913127" /></row>'; -- varchar(max)
+--Resultado
+/*============================================*/
+--ID		MovID		Estatus		CFDFlexEstatus	UUID									FechaTimbrado
+-----------------------------------------------------------------------------------------------------------------------
+--913128	TVE138556	CONCLUIDO	CONCLUIDO		8221463A-D429-403E-8560-F2F03C34549F	2018-10-31 09:47:28.000
+/*============================================*/

@@ -24,7 +24,18 @@ EXEC dbo.Interfaz_VentasInsertar @Empresa = 'TUN',                      -- char(
 --ID		MovID		Estatus		CFDFlexEstatus	UUID									FechaTimbrado
 -----------------------------------------------------------------------------------------------------------------------
 --913125	TVE138553	CONCLUIDO	CONCLUIDO		83BC4C23-6995-4547-AEB5-5720C10330B9	2018-10-31 08:17:31.000
+--913126	TVE138554	CONCLUIDO	CONCLUIDO		42C673DB-D11D-4FCB-934D-59D951E9E86A	2018-10-31 08:35:14.000
 /*============================================*/
+
+/*204 - El comprobante no se puede cancelar*/
+UPDATE dbo.CFD
+SET UUID = 'E329DD15-7D0B-44E9-A204-51A7443D1FBE'
+WHERE MovID = 'TVE138554';
+
+/*211 - La cancelación está en proceso*/
+UPDATE dbo.CFD
+SET UUID = 'C5E58106-6C1E-41C9-A211-FB8BAD1CABB0'
+WHERE MovID = 'TVE138515';
 
 /*Aplicando Nota de Cargo para Cancelar la Factura*/
 EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                                                                                      -- char(5)
@@ -34,7 +45,7 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                                 
                               @Moneda = 'Pesos',                                                                                     -- char(10)
                               @TipoCambio = 1.0,                                                                                     -- float
                               @Usuario = 'SITTI',                                                                                    -- char(10)
-                              @Codigo = 'Prueba-00001-NOTAR',                                                                        -- varchar(30)
+                              @Codigo = 'Prueba-00002-NOTAR',                                                                        -- varchar(30)
                               @Referencia = 'BONIFICACIÓN A CONVENIO 000877G-R',                                                     -- varchar(50)
                               @Cliente = '8365',                                                                                     -- char(10)
                               @Sucursal = 1,                                                                                         -- int
@@ -46,7 +57,7 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                                 
                               @CtaDinero = '',                                                                                       -- char(10)
                               @Observaciones = '',                                                                                   -- varchar(100)
                               @Comentarios = '',                                                                                     -- varchar(max)
-                              @Partidas = '<row><fila Aplica="Factura TranspInd" AplicaID="TVE138553" Importe="999.9999" /></row>'; -- varchar(max)
+                              @Partidas = '<row><fila Aplica="Factura TranspInd" AplicaID="TVE138554" Importe="999.9999" /></row>'; -- varchar(max)
 
 --Importe de aplicación no valido. El importe de aplicación indicado es menor al importe del movimiento. Por favor, indique un Concepto valido para esta combinación de movimiento y usuario.
 
@@ -54,5 +65,6 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                                 
 /*============================================*/
 --ID		MovID		Estatus		CFDFlexEstatus	
 ---------------------------------------------------
---427878	178			CONCLUIDO	
+--427878	178			CONCLUIDO	NULL
+--427880	179			CONCLUIDO	NULL
 /*============================================*/

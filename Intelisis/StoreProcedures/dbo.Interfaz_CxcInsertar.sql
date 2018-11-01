@@ -6,7 +6,7 @@ GO
 -- Ultimo Cambio:	31/10/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
-CREATE PROCEDURE [dbo].[Interfaz_CxcInsertar]
+ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
     @Empresa CHAR(5),
     @Mov CHAR(20),
     @FechaEmision SMALLDATETIME,

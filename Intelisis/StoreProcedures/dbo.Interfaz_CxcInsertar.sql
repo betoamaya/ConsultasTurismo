@@ -1,9 +1,9 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	21/08/2018
+-- Ultimo Cambio:	31/10/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 CREATE PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -134,7 +134,9 @@ BEGIN
         Consecutivo INT IDENTITY(1, 1) NOT NULL,
         Importe MONEY,
         Aplica CHAR(20),
-        AplicaID VARCHAR(20)
+        AplicaID VARCHAR(20),
+        EmisorCtaOrd VARCHAR(100),
+        CtaOrdenante VARCHAR(50)
     );
 
     DECLARE @X_Partidas XML;
@@ -145,7 +147,9 @@ BEGIN
         INSERT INTO @T_Partidas
         SELECT T.LOC.value('@Importe', 'MONEY') AS Importe,
                T.LOC.value('@Aplica', 'CHAR(20)') AS Aplica,
-               T.LOC.value('@AplicaID', 'VARCHAR(20)') AS AplicaID
+               T.LOC.value('@AplicaID', 'VARCHAR(20)') AS AplicaID,
+               T.LOC.value('@EmisorCtaOrd', 'VARCHAR(20)') AS EmisorCtaOrd,
+               T.LOC.value('@CtaOrdenante', 'VARCHAR(20)') AS CtaOrdenante
         FROM @X_Partidas.nodes('//row/fila') AS T(LOC);
         SELECT TOP 1
             @Aplica = Aplica,
@@ -153,10 +157,7 @@ BEGIN
         FROM @T_Partidas;
     END;
 
-    --IF ( @AplicaID IN ( 'TVE104921', 'TVE104232', 'TVE104231' ) )
-    --    BEGIN
-    --        SELECT  @Aplica = 'CFD Anticipo ServCom';
-    --    END
+
     /* Validación de CODIGO*/
     IF NOT EXISTS
     (
@@ -229,7 +230,7 @@ BEGIN
         IF (@Mov IN ( 'Cobro SIVE', 'Cobro TransInd', 'Cobro VE Gravado', 'Cobro Paquete', 'Bonificación TI',
                       'Bonificación SIVE', 'BONIFICACION VE GRAV', 'Devolucion Paquete', 'Devolucion Gravada',
                       'Devolucion', 'Nota Credito SIVE', 'Nota Credito TransIn', 'NOTA CREDITO VE GRAV',
-                      'CANCELACION TURISMO'
+                      'CANCELACION TURISMO', 'REF CANCELACION TUR'
                     )
            )
         BEGIN
@@ -540,7 +541,7 @@ BEGIN
         END;
 
         --	***	'CANCELACION TURISMO' ***
-        IF (@Mov IN ( 'CANCELACION TURISMO' ))
+        IF (@Mov IN ( 'CANCELACION TURISMO', 'REF CANCELACION TUR' ))
         BEGIN
             SET @bMovValido = 1;
             IF (@Usuario = 'SITTI')
@@ -558,7 +559,7 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Importe de aplicación no valido. El importe de aplicación indicado es menor al importe del movimiento. '
-                          + 'Por favor, indique un Concepto valido para esta combinación de movimiento y usuario.';
+                          + 'Por favor, verifique el importe.';
                 END;
             END;
             ELSE
@@ -638,7 +639,7 @@ BEGIN
 
         IF (@Mov NOT IN ( 'DEV.SALDO', 'Devolucion', 'Devolucion Gravada', 'Devolucion Saldo', 'Devolucion Paquete',
                           'Cobro SIVE', 'Cobro Paquete', 'Cobro TransInd', 'Cobro VE Gravado', 'CANCELACION TURISMO',
-                          'Bonificación TI', 'BONIFICACION VE GRAV'
+                          'REF CANCELACION TUR', 'Bonificación TI', 'BONIFICACION VE GRAV'
                         )
            )
         BEGIN
@@ -756,7 +757,7 @@ BEGIN
         --	*****	SE INSERTAN EL DETALLE EN CXCD	*****
         IF @Mov IN ( 'Bonificación TI', 'BONIFICACION VE GRAV', 'Cobro SIVE', 'Cobro TransInd', 'Cobro Paquete',
                      'Cobro VE Gravado', 'Devolucion', 'Devolucion Gravada', 'Devolucion Paquete', 'DEV.SALDO',
-                     'CANCELACION TURISMO'
+                     'CANCELACION TURISMO', 'REF CANCELACION TUR'
                    )
         BEGIN
             PRINT 'Caso Cobros Bonificaciones y Cancelaciones';
@@ -811,6 +812,49 @@ BEGIN
         PRINT 'Ya existe en CXC ID= ' + CAST(@RegresoID AS VARCHAR) + ' ' + RTRIM(@Mov) + ' '
               + RTRIM(ISNULL(@RegresoMovID, '0'));
     END;
+
+    /*Agregando CtaOrdenante para Complemento de Pago*/
+    IF
+    (
+        SELECT COUNT(*) FROM @T_Partidas AS tp
+    ) > 0
+    AND RTRIM(@Mov) IN ( 'Cobro TransInd', 'Cobro VE Gravado' )
+    BEGIN
+        DECLARE @CveCta AS INT;
+        SELECT @CveCta = cnsif.Clave
+        FROM dbo.CFDINominaSATInstitucionFin AS cnsif
+        WHERE cnsif.Nombre =
+        (
+            SELECT TOP 1 RTRIM(tp.EmisorCtaOrd) FROM @T_Partidas AS tp
+        );
+        IF ISNULL(@CveCta, '') <> ''
+        BEGIN
+            PRINT 'Actualizando CtaBanco de Cliente para complemento de pago';
+            PRINT @CveCta;
+            UPDATE c
+            SET c.CtaBanco = tp.CtaOrdenante,
+                c.ClaveBanco = @CveCta
+            FROM @T_Partidas AS tp
+                INNER JOIN dbo.Cte AS c
+                    ON c.Cliente = RTRIM(@Cliente)
+            WHERE Consecutivo = 1;
+        /*
+            SELECT c.Cliente, c.CtaBanco,
+                   c.ClaveBanco
+            FROM dbo.Cte AS c
+            WHERE c.Cliente = RTRIM(@Cliente);
+			*/
+        END;
+        ELSE
+        BEGIN
+            PRINT 'Eliminado CtaBanco cliente';
+            UPDATE dbo.Cte
+            SET CtaBanco = NULL,
+                ClaveBanco = NULL
+            WHERE Cliente = RTRIM(@Cliente);
+        END;
+    END;
+
     --********************************************************************
     --		AFECTAR
     --********************************************************************
@@ -1361,7 +1405,6 @@ BEGIN
         END;
     END;
 END;
-
 
 
 GO

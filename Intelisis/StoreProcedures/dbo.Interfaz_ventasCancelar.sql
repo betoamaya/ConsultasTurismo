@@ -1,118 +1,173 @@
 SET QUOTED_IDENTIFIER ON
 SET ANSI_NULLS ON
 GO
-CREATE Procedure [dbo].[Interfaz_ventasCancelar]
-	@VentaID	int,
-	@Usuario	char(10)
-As
+-- =============================================
+-- Responsable:		Roberto Amaya
+-- Ultimo Cambio:	22/10/2018
+-- Descripción:		Cancelación de Venta.
+-- =============================================
+ALTER PROCEDURE [dbo].[Interfaz_VentasCancelar]
+    @IDIntelisis AS INT,
+    @MovIdIntelisis AS VARCHAR(20),
+    @Usuario AS CHAR(10),
+    @iError AS INT = NULL OUTPUT,
+    @sError AS VARCHAR(MAX) = NULL OUTPUT,
+    @MovId AS VARCHAR(20) = NULL OUTPUT,
+    @Estatus AS VARCHAR(15) = NULL OUTPUT,
+    @Importe AS MONEY = NULL OUTPUT
+AS
+SET NOCOUNT ON;
+-- *************************************************************************
+--	Variables
+-- *************************************************************************
 
-	set nocount on
-	
-	-- *************************************************************************
-	-- Variables
-	-- *************************************************************************
-	
-	Declare @LogParametrosXml Xml;
-	Set @LogParametrosXml = 
-		(select 
-			@VentaID	as 'VentaID',
-			@Usuario	as 'Usuario'
-		For Xml Path('Parametros'));
-	
-	Exec Interfaz_LogsInsertar 'Interfaz_ventasCancelar','Ejecución','',@Usuario,@LogParametrosXml;
-	
-	Declare @cxcID		int
-	Declare @cxcMov		varchar(20)
-	Declare @cxcMovID	varchar(20)
-	
-	Declare @cID		int
-	Declare @intCont	int
-		
-	-- *************************************************************************
-	-- Validaciones
-	-- *************************************************************************
-			
-	---- Si la venta esta concluida no hay necesidad de hacer algo.
-	--If exists (select * from venta where ID = @VentaID and Estatus = 'CONCLUIDO')
-	--Begin
-	--	Exec Interfaz_LogsInsertar 'Interfaz_ventasCancelar','Error de Validación','Registro ya concluido, se termina sin ejecutar operaciones.',@Usuario,@LogParametrosXml;
-	--	return;
-	--End	
-	
-	-- *************************************************************************
-	-- Proceso
-	-- *************************************************************************
-	
-	Select 
-		@cxcID		= max(dID),
-		@cxcMov		= max(dMov),
-		@cxcMovID	= max(dMovID)
-	From
-		MovFlujo
-	Where
-		oID			=  @VentaID and
-		oModulo		= 'VTAS' and
-		dModulo		= 'CXC' and
-		Cancelado	= 0
-	
-	Create Table #cobros
-	(
-		Consecutivo	int identity(1,1) not null,
-		ID			int
-	)
-	
-	If exists (Select
-				ID
-			   From
-				cxcd
-			   Where
-				Aplica		= @cxcMov and
-				AplicaID	= @cxcMovID)
-	Begin
-		Insert Into #cobros
-			Select
-				ID	= cxcd.ID
-			From
-				cxcd
-			Where
-				Aplica		= @cxcMov and
-				AplicaID	= @cxcMovID
-	End
-		
-	-- Se cancelan cobros
-	Set @intCont = 1
-	while @intCont <= (Select count(*) from #cobros)
-	Begin
-		
-		Set @cID = (Select ID From #cobros Where Consecutivo = @intCont);
+DECLARE @LogParametrosXml AS XML,
+        @mensajeError AS VARCHAR(MAX);
 
-		Begin Try
-			Exec spAfectar 	'CXC', @cID, 'CANCELAR', 'Todo', null, @Usuario, NULL, 1;
-		End Try
-		Begin Catch
-		End Catch
-								
-		Set @intCont = @intCont + 1;
-	End
-	
-	
-	-- Se cancela el movimiento en venta
-	Begin Try
-		Exec spAfectar 	'VTAS', @VentaID, 'CANCELAR', 'Todo', null, @Usuario, NULL, 1;
-	End Try
-	Begin Catch
-	End Catch
-	
-	
-	-- *************************************************************************
-	-- Información de Retorno
-	-- *************************************************************************
+SET @LogParametrosXml =
+(
+    SELECT @IDIntelisis AS 'ID',
+           @MovIdIntelisis AS 'MovID',
+           @Usuario AS 'Usuario'
+    FOR XML PATH('Parametros')
+);
 
-	Select
-		Estatus
-	From
-		venta
-	Where
-		ID = @VentaID
+EXEC dbo.Interfaz_LogsInsertar @SP = 'Interfaz_VentasCancelar', -- varchar(255)
+                               @Tipo = 'Ejecución',             -- varchar(255)
+                               @DetalleError = '',              -- varchar(max)
+                               @Usuario = @Usuario,             -- varchar(10)
+                               @Parametros = @LogParametrosXml; -- xml
 
+-- *************************************************************************
+--	Validaciones
+-- *************************************************************************
+IF (@Usuario IS NULL OR RTRIM(LTRIM(@Usuario)) = '')
+BEGIN
+    SELECT @iError = 1,
+           @sError = 'Usuario no indicado. Por favor, indique un Usuario.';
+END;
+
+IF NOT EXISTS
+(
+    SELECT Usuario
+    FROM Usuario
+    WHERE RTRIM(LTRIM(Usuario)) = RTRIM(LTRIM(@Usuario))
+)
+BEGIN
+    SELECT @iError = 1,
+           @sError = 'Usuario no encontrado. Por favor, indique un Usuario valido de Intelisis.';
+END;
+
+IF NOT EXISTS
+(
+    SELECT v.Mov
+    FROM dbo.Venta AS v
+    WHERE v.ID = @IDIntelisis
+          AND v.MovID = @MovIdIntelisis
+          AND v.Mov IN ( 'Fact Otros Ing Cont', 'CFDI SIN VIAJE GRAV', 'Factura TranspInd' )
+)
+BEGIN
+    SELECT @iError = 1,
+           @sError = 'El tipo de Movimiento, no se encuentra en el catalogo de movimientos validos para cancelar.';
+END;
+
+IF NOT EXISTS
+(
+    SELECT v.Mov
+    FROM dbo.Venta AS v
+    WHERE v.ID = @IDIntelisis
+          AND v.MovID = @MovIdIntelisis
+)
+BEGIN
+    SELECT @iError = 1,
+           @sError = 'Movimiento no encontrado. Por favor, indique un Movimento valido.';
+END;
+
+PRINT 'Resultado de Validacion General: ' + RTRIM(ISNULL(@sError, ' '));
+IF @sError IS NOT NULL
+BEGIN
+    EXEC dbo.Interfaz_LogsInsertar 'Interfaz_AnticiposCancelar',    -- varchar(255)
+                                   @Tipo = 'Error',                 -- varchar(255)
+                                   @DetalleError = @sError,         -- varchar(max)
+                                   @Usuario = @Usuario,             -- varchar(10)
+                                   @Parametros = @LogParametrosXml; -- xml
+    --RAISERROR(@sError, 16, 1);
+    RETURN;
+END;
+
+/*---Hard-Code---*/
+IF RTRIM(@MovIdIntelisis) IN ( 'TVE138529', 'TVE138538' )
+BEGIN
+    PRINT '**/Hard-Code/***';
+    SELECT @iError = 213,
+           @sError = 'La solicitud de cancelación fue rechazada por el receptor.';
+    RETURN;
+END;
+
+-- *************************************************************************
+--	Validaciones
+-- *************************************************************************
+
+BEGIN TRY
+    PRINT 'Cancelando el movimiento: ' + RTRIM(@IDIntelisis);
+    EXEC dbo.spAfectar @Modulo = 'VTAS',        -- char(5)
+                       @ID = @IDIntelisis,      -- int
+                       @Accion = 'CANCELAR',    -- char(20)
+                       @Base = 'Todo',          -- char(20)
+                       @GenerarMov = NULL,      -- char(20)
+                       @Usuario = @Usuario,     -- char(10)
+                       @SincroFinal = NULL,     -- bit
+                       @EnSilencio = 1,         -- bit
+                       @Ok = @iError OUTPUT,    -- int
+                       @OkRef = @sError OUTPUT; -- varchar(255)
+
+    PRINT 'Retorno SPAfectar: ' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' ' + RTRIM(ISNULL(@sError, ''));
+
+    SELECT @sError = ml.Descripcion + ' ' + RTRIM(ISNULL(@sError, ''))
+    FROM dbo.MensajeLista ml
+    WHERE ml.Mensaje = @iError;
+
+    PRINT 'Codigo de Resultado: ' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' ' + RTRIM(ISNULL(@sError, ''));
+END TRY
+BEGIN CATCH
+    SELECT @iError = ERROR_NUMBER(),
+           @sError = '(sp ' + ERROR_PROCEDURE() + ', ln ' + CAST(ERROR_LINE() AS VARCHAR) + ') ' + ERROR_MESSAGE();
+END CATCH;
+
+IF EXISTS
+(
+    SELECT A.Estatus
+    FROM dbo.Venta AS A
+    WHERE A.Estatus <> 'CANCELADO'
+          AND A.ID = @IDIntelisis
+)
+BEGIN
+    SET @mensajeError
+        = 'Error al aplicar el movimiento de Intelisis: ' + 'Error = ' + CAST(ISNULL(@iError, -1) AS VARCHAR(255))
+          + ', Mensaje = ' + ISNULL(@sError, '') + ', el movimiento no fue cancelado. Intente nuevamente.';
+
+    EXEC dbo.Interfaz_LogsInsertar 'Interfaz_AnticiposCancelar',    -- varchar(255)
+                                   @Tipo = 'Error',                 -- varchar(255)
+                                   @DetalleError = @sError,         -- varchar(max)
+                                   @Usuario = @Usuario,             -- varchar(10)
+                                   @Parametros = @LogParametrosXml; -- xml
+--RAISERROR(@sError, 16, 1);
+--RETURN;
+END;
+ELSE
+BEGIN
+    SELECT @iError = 0,
+           @sError = 'CANCELADO';
+END;
+
+-- *************************************************************************
+--		INFORMACION DE RETORNO
+-- *************************************************************************
+
+SELECT @MovId = A.MovID,
+       @Estatus = A.Estatus,
+       @Importe = A.Importe
+FROM dbo.Venta AS A
+WHERE A.ID = @IDIntelisis;
+RETURN;
 GO

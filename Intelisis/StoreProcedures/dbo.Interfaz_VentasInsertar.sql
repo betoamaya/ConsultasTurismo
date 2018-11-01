@@ -779,7 +779,7 @@ BEGIN
                 IdOrigen,
                 MovOrigen,
                 MovIDOrigen,
-				ClaveTipoRelacion
+                ClaveTipoRelacion
             )
             SELECT @Empresa,
                    'VTAS',
@@ -788,7 +788,7 @@ BEGIN
                    v.ID,
                    v.Mov,
                    v.MovID,
-				   '04' --Tipo Relación
+                   '04' --Tipo Relación
             FROM dbo.Venta v
                 INNER JOIN @T_MovRelacionados ta
                     ON ta.ID = v.ID;

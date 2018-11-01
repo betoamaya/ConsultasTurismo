@@ -4,7 +4,7 @@ GO
 -- =============================================
 -- Responsable:		Roberto Amaya
 -- Ultimo Cambio:	31/10/2018
--- Descripci髇:		Insersi髇 y afectaci髇 de facturas de credito y venta.
+-- Descripci贸n:		Insersi贸n y afectaci贸n de facturas de credito y venta.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_VentasInsertar]
     @Empresa AS CHAR(5),
@@ -72,7 +72,7 @@ BEGIN
         FOR XML PATH('Parametros')
     );
     EXEC Interfaz_LogsInsertar 'Interfaz_VentasInsertar',
-                               'Inserci髇',
+                               'Inserci贸n',
                                '',
                                @Usuario,
                                @LogParametrosXml;
@@ -81,15 +81,15 @@ BEGIN
     PRINT 'Tipo de pago recibida: ' + RTRIM(@TipoPago);
     SELECT @TipoPago = (CASE
                             WHEN @TipoPago = 'Tarjeta de Credito' THEN
-                                'Tarjetas de Cr閐ito'
+                                'Tarjetas de Cr茅dito'
                             WHEN @TipoPago = 'Tarjeta de Debito' THEN
-                                'Tarjeta de d閎ito'
+                                'Tarjeta de d茅bito'
                             WHEN @TipoPago = 'Deposito Cheque' THEN
                                 'Cheque'
                             WHEN @TipoPago = 'Deposito Efectivo' THEN
                                 'Efectivo'
                             WHEN @TipoPago = 'PayPal' THEN
-                                'Tarjeta de d閎ito'
+                                'Tarjeta de d茅bito'
                             WHEN @TipoPago = 'Transferencia' THEN
                                 'Transferencia Electronica'
                             WHEN @TipoPago = 'NO IDENTIFICADO' THEN
@@ -218,7 +218,7 @@ BEGIN
                                NULL
                        END
                       );
-    PRINT 'Resultado de validaci髇 General: ' + RTRIM(@sError);
+    PRINT 'Resultado de validaci贸n General: ' + RTRIM(@sError);
     --********************************************************************
     --        VALIDACIONES POR MOVIMIENTO
     --********************************************************************
@@ -227,13 +227,13 @@ BEGIN
     IF (@Mov IN ( 'CFDI SIN VIAJE GRAV', 'INE SIN VIAJE GRAV' ))
     BEGIN
         SET @bMovValido = 1;
-        --SET @DescripcionExtra = 'SERVICIO DE TRANSPORTE P贐LICO DE PERSONAS';
+        --SET @DescripcionExtra = 'SERVICIO DE TRANSPORTE P脷BLICO DE PERSONAS';
         SET @DescripcionExtra = '';
         IF (@Concepto <> 'VIAJE ESPECIAL GRAVADO')
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                  + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
+                  + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
         END;
     END;
 
@@ -245,7 +245,7 @@ BEGIN
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                  + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
+                  + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
         END;
         IF (@Concepto = 'ENTRADAS A PARQUES')
         BEGIN
@@ -273,7 +273,7 @@ BEGIN
     IF (@Mov IN ( 'FACT.VE.GRAVADO', 'INE VE GRAVADO' ))
     BEGIN
         SET @bMovValido = 1;
-        --SET @DescripcionExtra = 'SERVICIO DE TRANSPORTE P贐LICO DE PERSONAS';
+        --SET @DescripcionExtra = 'SERVICIO DE TRANSPORTE P脷BLICO DE PERSONAS';
         SET @DescripcionExtra = '';
         IF (
                @Concepto <> 'VIAJE ESPECIAL GRAVADO'
@@ -282,7 +282,7 @@ BEGIN
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                  + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
+                  + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
 
         END;
     END;
@@ -297,7 +297,7 @@ BEGIN
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                  + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
+                  + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
 
         END;
         IF (@Concepto = 'T.INDUSTRIAL 10%')
@@ -323,13 +323,13 @@ BEGIN
     BEGIN
         SET @bMovValido = 1;
         SELECT @Condicion = 'Contado';
-        --SET @DescripcionExtra = 'SERVICIO DE TRANSPORTE P贐LICO DE PERSONAS';
+        --SET @DescripcionExtra = 'SERVICIO DE TRANSPORTE P脷BLICO DE PERSONAS';
         SET @DescripcionExtra = '';
         IF (@Concepto <> 'DEV/SOBRE VENTAS DE VIAJES ESPECIALES')
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                  + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
+                  + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
 
         END;
     END;
@@ -349,14 +349,14 @@ BEGIN
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                  + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
+                  + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
 
         END;
 
         SET @DescripcionExtra = '';
         IF NOT EXISTS (SELECT ID FROM @T_MovRelacionados)
         BEGIN
-            SET @sError = 'No indico ning鷑 anticipo. Por favor, indique al menos un anticipo valido.';
+            SET @sError = 'No indico ning煤n anticipo. Por favor, indique al menos un anticipo valido.';
         END;
         ELSE
         BEGIN
@@ -476,11 +476,11 @@ BEGIN
             = 'Mov no valido. El movimiento no se encuentra entre los movimientos esperados. '
               + 'Por favor, indique un Movimiento valido.';
     END;
-    PRINT 'Resultado de validaci髇 por movimiento: ' + RTRIM(@sError);
+    PRINT 'Resultado de validaci贸n por movimiento: ' + RTRIM(@sError);
     IF @sError <> 'Ok'
     BEGIN
         EXEC Interfaz_LogsInsertar 'Interfaz_VentasInsertar',
-                                   'Error de Validaci髇',
+                                   'Error de Validaci贸n',
                                    @sError,
                                    @Usuario,
                                    @LogParametrosXml;
@@ -544,7 +544,7 @@ BEGIN
           AND ccf.dFin >= @FechaEmision
     ORDER BY ccf.dAlta DESC;
 
-    /* Validaci髇 de CODIGO*/
+    /* Validaci贸n de CODIGO*/
     IF NOT EXISTS
     (
         SELECT v.Codigo
@@ -727,7 +727,7 @@ BEGIN
                    c.ID,
                    c.Mov,
                    c.MovID,
-                   '07' --Tipo Relaci髇
+                   '07' --Tipo Relaci贸n
             FROM dbo.Cxc c
                 INNER JOIN @T_MovRelacionados ta
                     ON ta.ID = c.ID;
@@ -769,7 +769,7 @@ BEGIN
         IF @Mov IN ( 'Factura TranspInd', 'FACT.VE.GRAVADO' )
            AND ISNULL(@MovRelacionados, '') <> ''
         BEGIN
-            PRINT 'Relacionando la factura por sutituci髇';
+            PRINT 'Relacionando la factura por sutituci贸n';
             INSERT INTO dbo.VentaOrigenDevolucion
             (
                 Empresa,
@@ -788,7 +788,7 @@ BEGIN
                    v.ID,
                    v.Mov,
                    v.MovID,
-                   '04' --Tipo Relaci髇
+                   '04' --Tipo Relaci贸n
             FROM dbo.Venta v
                 INNER JOIN @T_MovRelacionados ta
                     ON ta.ID = v.ID;
@@ -992,5 +992,4 @@ BEGIN
                AND c.ModuloID = v.ID
     WHERE v.ID = @RegresoID;
 END;
-
 GO

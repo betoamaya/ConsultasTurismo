@@ -766,7 +766,7 @@ BEGIN
                     ON ta.ID = v.ID;
         END;
         /*Caso Refacturacion TI y VE*/
-        IF @Mov IN ( 'Factura TranspInd', 'FACT.VE.GRAVADO' )
+        IF @Mov IN ( 'Factura TranspInd', 'FACT.VE.GRAVADO', 'CFDI SIN VIAJE GRAV' )
            AND ISNULL(@MovRelacionados, '') <> ''
         BEGIN
             PRINT 'Relacionando la factura por sutitución';

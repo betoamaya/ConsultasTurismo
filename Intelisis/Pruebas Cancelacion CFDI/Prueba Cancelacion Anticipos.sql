@@ -19,7 +19,7 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                               --
                               @Moneda = 'Pesos',                              -- char(10)
                               @TipoCambio = 1.0,
                               @Usuario = 'SITTI',
-                              @Codigo = 'PRUEBA-000003-ANTI',
+                              @Codigo = 'PRUEBA-000005-ANTI',
                               @Referencia = 'VIAJES COBRADOS X ANT. PAG. 004995G-C',
                               @Cliente = '74730',
                               @Sucursal = 0,
@@ -62,13 +62,15 @@ SELECT @ID AS ID,
 --Resultado
 --ID		MovID		Estatus		CFDFlexEstatus	UUID									FechaTimbrado
 --427707	TVE138515	PENDIENTE      	CONCLUIDO	434CC1AD-DD62-47AE-90D4-37FC9EA54F46	Oct 16 2018  5:46PM
+--427924	TVE138583	PENDIENTE      	CONCLUIDO	48BEA580-6595-4F33-A4ED-B415D51C9A06	Nov  6 2018  9:22AM
+--427926	TVE138584	PENDIENTE      	CONCLUIDO	5C67D2EE-E35E-46F4-837C-8835EBB361CC	Nov  6 2018  9:25AM
 /*============================================*/
 
 GO
 /*204 - El comprobante no se puede cancelar*/
 UPDATE dbo.CFD
 SET UUID = 'E329DD15-7D0B-44E9-A204-51A7443D1FBE'
-WHERE MovID = 'TVE138515';
+WHERE MovID = 'TVE138584';
 
 /*211 - La cancelación está en proceso*/
 UPDATE dbo.CFD
@@ -88,8 +90,8 @@ DECLARE @iError INT,
         @MovId VARCHAR(20),
         @Estatus VARCHAR(15),
         @Importe MONEY;
-EXEC dbo.Interfaz_AnticiposCancelar @IDIntelisis = 427707,           -- int
-                                    @MovIdIntelisis = 'TVE138515',       -- varchar(20)
+EXEC dbo.Interfaz_AnticiposCancelar @IDIntelisis = 427926,           -- int
+                                    @MovIdIntelisis = 'TVE138584',       -- varchar(20)
                                     @Usuario = 'SITTI',              -- char(10)
                                     @iError = @iError OUTPUT,   -- int
                                     @sError = @sError OUTPUT,   -- varchar(max)
@@ -108,4 +110,6 @@ SELECT @iError AS iError,
 --204		El CFDI no aplica para cancelación.	TVE138515	PENDIENTE	800.00
 --211		La cancelación está en proceso.		TVE138515	PENDIENTE	800.00
 --0			CANCELADO							TVE138515	CANCELADO	800.00
+--0			CANCELADO							TVE138583	CANCELADO	800.00
+--204		El CFDI no aplica para cancelación.	TVE138584	PENDIENTE	800.00
 --======================================

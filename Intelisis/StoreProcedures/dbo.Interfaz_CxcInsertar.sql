@@ -3,8 +3,8 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	31/10/2018
--- Descripci贸n:		Insersi贸n y afectaci贸n de facturas de Anticipo y Otros Movimientos CXC.
+-- Ultimo Cambio:	06/11/2018
+-- Descripci髇:		Insersi髇 y afectaci髇 de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
     @Empresa CHAR(5),
@@ -75,7 +75,7 @@ BEGIN
     );
     -- Se Registra Evento
     EXEC Interfaz_LogsInsertar 'Interfaz_CxcInsertar',
-                               'Inserci贸n',
+                               'Inserci髇',
                                '',
                                @Usuario,
                                @LogParametrosXml;
@@ -83,15 +83,15 @@ BEGIN
     PRINT 'Tipo de pago recibida: ' + RTRIM(@TipoPago);
     SELECT @TipoPago = (CASE
                             WHEN @TipoPago = 'Tarjeta de Credito' THEN
-                                'Tarjetas de Cr茅dito'
+                                'Tarjetas de Cr閐ito'
                             WHEN @TipoPago = 'Tarjeta de Debito' THEN
-                                'Tarjeta de d茅bito'
+                                'Tarjeta de d閎ito'
                             WHEN @TipoPago = 'Deposito Cheque' THEN
                                 'Cheque'
                             WHEN @TipoPago = 'Deposito Efectivo' THEN
                                 'Efectivo'
                             WHEN @TipoPago = 'PayPal' THEN
-                                'Tarjeta de d茅bito'
+                                'Tarjeta de d閎ito'
                             WHEN @TipoPago = 'Transferencia' THEN
                                 'Transferencia Electronica'
                             WHEN @TipoPago = 'NO IDENTIFICADO' THEN
@@ -128,7 +128,7 @@ BEGIN
     --    @Ref3 AS CHAR(50) = '' ,	--Referencia3
     --    @Ref4 AS CHAR(50) = '';		--Referencia4
 
-    --Tabla de Partidas para movimientos con Aplicaci贸n 2
+    --Tabla de Partidas para movimientos con Aplicaci髇 2
     DECLARE @T_Partidas TABLE
     (
         Consecutivo INT IDENTITY(1, 1) NOT NULL,
@@ -158,7 +158,7 @@ BEGIN
     END;
 
 
-    /* Validaci贸n de CODIGO*/
+    /* Validaci髇 de CODIGO*/
     IF NOT EXISTS
     (
         SELECT c.Codigo
@@ -227,8 +227,8 @@ BEGIN
             SET @Mov = 'Nota Credito SIVE';
             SET @Concepto = 'CANC. ING. VE CFD';
         END;
-        IF (@Mov IN ( 'Cobro SIVE', 'Cobro TransInd', 'Cobro VE Gravado', 'Cobro Paquete', 'Bonificaci贸n TI',
-                      'Bonificaci贸n SIVE', 'BONIFICACION VE GRAV', 'Devolucion Paquete', 'Devolucion Gravada',
+        IF (@Mov IN ( 'Cobro SIVE', 'Cobro TransInd', 'Cobro VE Gravado', 'Cobro Paquete', 'Bonificaci髇 TI',
+                      'Bonificaci髇 SIVE', 'BONIFICACION VE GRAV', 'Devolucion Paquete', 'Devolucion Gravada',
                       'Devolucion', 'Nota Credito SIVE', 'Nota Credito TransIn', 'NOTA CREDITO VE GRAV',
                       'CANCELACION TURISMO', 'REF CANCELACION TUR'
                     )
@@ -267,7 +267,7 @@ BEGIN
             )
             BEGIN
                 SET @sError
-                    = 'Factura no encontrada. Los par谩metros Aplica = "' + RTRIM(@Aplica) + '" y AplicaID = "'
+                    = 'Factura no encontrada. Los par醡etros Aplica = "' + RTRIM(@Aplica) + '" y AplicaID = "'
                       + RTRIM(@AplicaID) + '" hacen referencia a una factura que no fue encontrada. '
                       + 'Por favor, indique una factura valida.';
             END;
@@ -284,7 +284,7 @@ BEGIN
                )
             BEGIN
                 SET @sError
-                    = 'Factura no se encuentra "PENDIENTE". Los par谩metros Aplica = "' + RTRIM(@Aplica)
+                    = 'Factura no se encuentra "PENDIENTE". Los par醡etros Aplica = "' + RTRIM(@Aplica)
                       + '" y AplicaID = "' + RTRIM(@AplicaID)
                       + '" hacen referencia a una factura que no se encuentra en estado "PENDIENTE". '
                       + 'Por favor, indique una factura valida.';
@@ -302,7 +302,7 @@ BEGIN
                )
             BEGIN
                 SET @sError
-                    = 'La factura no corresponde al cliente indicado. Los par谩metros Aplica = "' + RTRIM(@Aplica)
+                    = 'La factura no corresponde al cliente indicado. Los par醡etros Aplica = "' + RTRIM(@Aplica)
                       + '" y AplicaID = "' + RTRIM(@AplicaID)
                       + '" hacen referencia a una factura que no corresponde al Cliente indicado. '
                       + 'Por favor, indique una factura valida.';
@@ -338,8 +338,8 @@ BEGIN
             ) <> (@Importe + @Impuestos)
             BEGIN
                 SET @sError
-                    = 'Importe de aplicaci贸n no valido. El importe de aplicaci贸n indicado es diferente al importe del movimiento. '
-                      + 'Por favor, indique un Importe de aplicaci贸n.';
+                    = 'Importe de aplicaci髇 no valido. El importe de aplicaci髇 indicado es diferente al importe del movimiento. '
+                      + 'Por favor, indique un Importe de aplicaci髇.';
             END;
         END;
 
@@ -371,13 +371,13 @@ BEGIN
             SET @sError = @sError + '). Favor de verificarlos.';
         END;
 
-        PRINT 'Resultado de validaci贸n General: ' + RTRIM(ISNULL(@sError, 'Ok'));
+        PRINT 'Resultado de validaci髇 General: ' + RTRIM(ISNULL(@sError, 'Ok'));
         --********************************************************************
         --		VALIDACIONES POR MOVIMIENTO
         --********************************************************************
         SET @bMovValido = 0;
-        --  ***	'Bonificaci贸n TI' ***
-        IF (@Mov = 'Bonificaci贸n TI')
+        --  ***	'Bonificaci髇 TI' ***
+        IF (@Mov = 'Bonificaci髇 TI')
         BEGIN
             SET @bMovValido = 1;
             IF (@Usuario = 'SITTI')
@@ -386,13 +386,13 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF (@Aplica <> 'Factura TranspInd')
                 BEGIN
                     SET @sError
                         = 'Aplica no valido. El movimiento Aplica se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Aplica valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Aplica valido para esta combinaci髇 de movimiento y usuario.';
                     RETURN;
                 END;
             END;
@@ -413,13 +413,13 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF (@Aplica NOT IN ( 'FACT.VE.GRAVADO', 'FACTURA VE TOTAL', 'Ingreso Paquetes', 'INE VE GRAVADO' ))
                 BEGIN
                     SET @sError
                         = 'Aplica no valido. El movimiento Aplica se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Aplica valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Aplica valido para esta combinaci髇 de movimiento y usuario.';
                 END;
             END;
             ELSE
@@ -439,7 +439,7 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
             END;
             ELSE
@@ -459,13 +459,13 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF (@Aplica NOT IN ( 'Factura TranspInd', 'Nota Cargo SIVE', 'Endoso' ))
                 BEGIN
                     SET @sError
                         = 'Aplica no valido. El movimiento Aplica se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Aplica valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Aplica valido para esta combinaci髇 de movimiento y usuario.';
                 END;
             END;
             ELSE
@@ -485,7 +485,7 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF (@Aplica NOT IN ( 'FACT.VE.GRAVADO', 'CFDI SIN VIAJE GRAV', 'Nota Cargo SIVE',
                                      'CFD FactVia Credito', 'CFD Sin Viaje', 'Factura TraspInd', 'Factura INE',
@@ -495,7 +495,7 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Aplica no valido. El movimiento Aplica se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Aplica valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Aplica valido para esta combinaci髇 de movimiento y usuario.';
                 END;
             END;
             ELSE
@@ -516,18 +516,18 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF (@Aplica NOT IN ( 'CFD Anticipo', 'CFD Anticipo ServCom' ))
                 BEGIN
                     SET @sError
                         = 'Aplica no valido. El movimiento Aplica se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Aplica valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Aplica valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF (@Impuestos <> 0)
                 BEGIN
                     SET @sError
-                        = 'Este movimiento no debe tener Impuestos. El movimiento Devoluci贸n Gravada debe indicar Impuestos 0 '
+                        = 'Este movimiento no debe tener Impuestos. El movimiento Devoluci髇 Gravada debe indicar Impuestos 0 '
                           + 'en el encabezado. Por favor, indique un valor de Impuestos valido para este movimiento.';
                 END;
                 SET @Condicion = 'Contado'; -- se implemento por solicitud de Juan Gabina
@@ -550,7 +550,7 @@ BEGIN
                 BEGIN
                     SET @sError
                         = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
-                          + 'Por favor, indique un Concepto valido para esta combinaci贸n de movimiento y usuario.';
+                          + 'Por favor, indique un Concepto valido para esta combinaci髇 de movimiento y usuario.';
                 END;
                 IF
                 (
@@ -558,7 +558,7 @@ BEGIN
                 ) < (@Importe + @Impuestos)
                 BEGIN
                     SET @sError
-                        = 'Importe de aplicaci贸n no valido. El importe de aplicaci贸n indicado es menor al importe del movimiento. '
+                        = 'Importe de aplicaci髇 no valido. El importe de aplicaci髇 indicado es menor al importe del movimiento. '
                           + 'Por favor, verifique el importe.';
                 END;
             END;
@@ -575,11 +575,11 @@ BEGIN
                 = 'Mov no valido. El movimiento no se encuentra entre los movimientos esperados. '
                   + 'Por favor, indique un Movimiento valido.';
         END;
-        PRINT 'Resultado de validaci贸n por movimiento: ' + RTRIM(ISNULL(@sError, 'Ok'));
+        PRINT 'Resultado de validaci髇 por movimiento: ' + RTRIM(ISNULL(@sError, 'Ok'));
         IF @sError <> 'Ok'
         BEGIN
             EXEC Interfaz_LogsInsertar 'Interfaz_CxcInsertar',
-                                       'Error de Validaci贸n',
+                                       'Error de Validaci髇',
                                        @sError,
                                        @Usuario,
                                        @LogParametrosXml;
@@ -633,13 +633,13 @@ BEGIN
               AND ccf.dFin >= @FechaEmision
         ORDER BY ccf.dAlta DESC;
 
-        PRINT 'Condici贸n: ' + ISNULL(@Condicion, '');
+        PRINT 'Condici髇: ' + ISNULL(@Condicion, '');
         --	*****	SE INSERTAN LOS REGISTROS EN CXC	*****
         PRINT 'Se inserta registro nuevo en CXC';
 
         IF (@Mov NOT IN ( 'DEV.SALDO', 'Devolucion', 'Devolucion Gravada', 'Devolucion Saldo', 'Devolucion Paquete',
                           'Cobro SIVE', 'Cobro Paquete', 'Cobro TransInd', 'Cobro VE Gravado', 'CANCELACION TURISMO',
-                          'REF CANCELACION TUR', 'Bonificaci贸n TI', 'BONIFICACION VE GRAV'
+                          'REF CANCELACION TUR', 'Bonificaci髇 TI', 'BONIFICACION VE GRAV'
                         )
            )
         BEGIN
@@ -648,7 +648,7 @@ BEGIN
         END;
         ELSE
         BEGIN
-            PRINT 'Aplicaci贸n manual';
+            PRINT 'Aplicaci髇 manual';
             SET @AplManual = 1; -- APLICACION MANUAL
             SET @Origen = @Aplica;
         END;
@@ -755,7 +755,7 @@ BEGIN
         PRINT 'Se inserta detalle de CXC ID= ' + CAST(@RegresoID AS VARCHAR) + ' Mov= ' + RTRIM(@Mov);
 
         --	*****	SE INSERTAN EL DETALLE EN CXCD	*****
-        IF @Mov IN ( 'Bonificaci贸n TI', 'BONIFICACION VE GRAV', 'Cobro SIVE', 'Cobro TransInd', 'Cobro Paquete',
+        IF @Mov IN ( 'Bonificaci髇 TI', 'BONIFICACION VE GRAV', 'Cobro SIVE', 'Cobro TransInd', 'Cobro Paquete',
                      'Cobro VE Gravado', 'Devolucion', 'Devolucion Gravada', 'Devolucion Paquete', 'DEV.SALDO',
                      'CANCELACION TURISMO', 'REF CANCELACION TUR'
                    )
@@ -776,7 +776,7 @@ BEGIN
         ELSE
         BEGIN
 
-            IF @Mov IN ( 'Bonificaci贸n SIVE', 'Nota Credito TransIn', 'Nota Credito SIVE' )
+            IF @Mov IN ( 'Bonificaci髇 SIVE', 'Nota Credito TransIn', 'Nota Credito SIVE' )
             BEGIN
                 PRINT 'Caso Nota de Credito';
                 INSERT INTO CxcD
@@ -852,6 +852,93 @@ BEGIN
             SET CtaBanco = NULL,
                 ClaveBanco = NULL
             WHERE Cliente = RTRIM(@Cliente);
+        END;
+    END;
+
+    IF RTRIM(@Mov) = 'CANCELACION TURISMO'
+    BEGIN
+        PRINT 'Proceso de Cancelaci髇 CFDI de Cancelaci髇 Turismo';
+        DECLARE @Ok INT,
+                @OkRef VARCHAR(255),
+                @EstatusCancelacion VARCHAR(10);
+        SELECT TOP 1
+            @a2ID = v.ID
+        FROM dbo.Venta AS v
+        WHERE v.Empresa = RTRIM(@Empresa)
+              AND v.Mov = RTRIM(@Aplica)
+              AND v.MovID = RTRIM(@AplicaID);
+        BEGIN TRY
+            EXEC dbo.spCFDCancelacionEstatus @Empresa = @Empresa,                              -- varchar(5)
+                                             @Modulo = 'VTAS',                                 -- varchar(5)
+                                             @ModuloID = @a2ID,                                -- int
+                                             @Ok = @Ok OUTPUT,                                 -- int
+                                             @OkRef = @OkRef OUTPUT,                           -- varchar(255)
+                                             @EstatusCancelacion = @EstatusCancelacion OUTPUT; -- varchar(10)
+        END TRY
+        BEGIN CATCH
+            SELECT @iError = ERROR_NUMBER(),
+                   @sError
+                       = '(sp ' + ERROR_PROCEDURE() + ', ln ' + CAST(ERROR_LINE() AS VARCHAR) + ') ' + ERROR_MESSAGE();
+        END CATCH;
+        IF @EstatusCancelacion NOT IN ( '201', '202' )
+           OR @EstatusCancelacion IS NULL
+        BEGIN
+            SET @sError
+                = 'Error al cancelar el CFDI: ' + 'Error = ' + CAST(ISNULL(@Ok, -1) AS VARCHAR(255)) + ', Mensaje = '
+                  + ISNULL(@OkRef, '') + '. Intente nuevamente.';
+            EXEC Interfaz_LogsInsertar 'Interfaz_CxcInsertar',
+                                       'Error',
+                                       @sError,
+                                       @Usuario,
+                                       @LogParametrosXml;
+            SET @sError =
+            (
+                SELECT REPLACE(
+                                  REPLACE(
+                                             CAST(
+                                             (
+                                                 SELECT ISNULL(@Ok, -1) AS CodigoError,
+                                                        ISNULL(@OkRef, 'Error no Identificado') AS DescrError
+                                                 FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
+                                             ) AS VARCHAR(MAX)),
+                                             '&lt;',
+                                             '<'
+                                         ),
+                                  '&gt;',
+                                  '>'
+                              )
+            );
+            SELECT ID = c.ID,
+                   MovID = c.MovID,
+                   Estatus = c.Estatus,
+                   CFDFlexEstatus = @sError,
+                   CFDXML = NULL,
+                   noCertificado = NULL,
+                   Sello = NULL,
+                   SelloSAT = NULL,
+                   TFDCadenaOriginal = NULL,
+                   UUID = NULL,
+                   FechaTimbrado = NULL,
+                   noCertificadoSAT = NULL
+            FROM dbo.Cxc c
+            WHERE c.ID = @RegresoID;
+
+            SELECT @ID = c.ID,
+                   @MovID = c.MovID,
+                   @Estatus = c.Estatus,
+                   @CFDFlexEstatus = @sError,
+                   @CFDXml = NULL,
+                   @noCertificado = NULL,
+                   @Sello = NULL,
+                   @SelloSAT = NULL,
+                   @TFDCadenaOriginal = NULL,
+                   @UUID = NULL,
+                   @FechaTimbrado = NULL,
+                   @noCertificadoSAT = NULL
+            FROM dbo.Cxc c
+            WHERE c.ID = @RegresoID;
+
+            RETURN;
         END;
     END;
 
@@ -1006,7 +1093,7 @@ BEGIN
     END;
 
     --********************************************************************
-    --		Aplicaci贸n2 que concluye los movimientos de Bonificaci贸n y Nota de cr茅dito 
+    --		Aplicaci髇2 que concluye los movimientos de Bonificaci髇 y Nota de cr閐ito 
     --********************************************************************
     /*Revisar casos */
     IF (@Mov IN ( 'Nota Credito TransIn', 'Nota Credito SIVE', 'NOTA CREDITO VE GRAV' ))
@@ -1154,7 +1241,7 @@ BEGIN
             ) = 'SINAFECTAR'
             BEGIN
                 SET @sError
-                    = 'Error al aplicar el movimiento de aplicaci贸n 2 de Intelisis: ' + 'Error = '
+                    = 'Error al aplicar el movimiento de aplicaci髇 2 de Intelisis: ' + 'Error = '
                       + CAST(ISNULL(@iError, -1) AS VARCHAR(255)) + ', Mensaje = ' + ISNULL(@sError, '')
                       + ', el movimiento fue cancelado. Intente nuevamente.';
                 EXEC Interfaz_LogsInsertar 'Interfaz_cxcInsertar',
@@ -1185,15 +1272,15 @@ BEGIN
             PRINT 'Generando CFDI de Cxc ID= ' + CAST(@RegresoID AS VARCHAR) + ' ' + RTRIM(@Mov) + ' '
                   + RTRIM(ISNULL(@RegresoMovID, '0'));
 
-            /*Se crea la informaci贸n para el CFDI Cobro Parcial*/
-            EXEC dbo.spCFDICobroParcialMovimientosCxc @Estacion = @RegresoID, -- int -- Estaci贸n Turismo
+            /*Se crea la informaci髇 para el CFDI Cobro Parcial*/
+            EXEC dbo.spCFDICobroParcialMovimientosCxc @Estacion = @RegresoID, -- int -- Estaci髇 Turismo
                                                       @Empresa = 'TUN',       -- varchar(5)
                                                       @cID = @RegresoID;      -- int
 
             EXEC dbo.spCFDICobroParcialLimpiarCte @Estacion = @RegresoID;
 
             DELETE ListaID
-            WHERE Estacion = @RegresoID; -- Elimina movimientos pendientes de esta estaci贸n
+            WHERE Estacion = @RegresoID; -- Elimina movimientos pendientes de esta estaci髇
             /*Inserta nuevos movimiento para afectar*/
             INSERT dbo.ListaID
             (
@@ -1219,7 +1306,7 @@ BEGIN
             ----EXEC dbo.spXMLPagosParciales @Estacion = @RegresoID, @Empresa = 'TUN';
 
             DELETE ListaID
-            WHERE Estacion = @RegresoID; -- Elimina movimientos pendientes de esta estaci贸n
+            WHERE Estacion = @RegresoID; -- Elimina movimientos pendientes de esta estaci髇
 
             SET @sError = 'Resultado Timbrado :' + RTRIM(ISNULL(@sError, 'CONCLUIDO'));
             PRINT @sError;

@@ -58,6 +58,21 @@ SELECT @Ok,
        @OkRef,
        @EstatusCancelacion;
 
+SELECT REPLACE(
+                  REPLACE(   CAST(
+                             (
+                                 SELECT @Ok AS CodigoError,
+                                        @OkRef AS DescrError
+                                 FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
+                             ) AS VARCHAR(MAX)),
+                             '&lt;',
+                             '<'
+                         ),
+                  '&gt;',
+                  '>'
+              );
+
+
 --Resultado
 /*============================================*/
 --@Ok		@OkRef								@EstatusCancelacion

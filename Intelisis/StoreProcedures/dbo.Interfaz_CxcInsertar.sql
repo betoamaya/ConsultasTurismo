@@ -855,7 +855,15 @@ BEGIN
         END;
     END;
 
-    IF RTRIM(@Mov) = 'CANCELACION TURISMO'
+    IF (RTRIM(@Mov) = 'CANCELACION TURISMO')
+       AND EXISTS
+    (
+        SELECT c.Codigo
+        FROM dbo.Cxc c
+        WHERE c.Codigo = @Codigo
+              AND c.ID = @RegresoID
+              AND c.Estatus = 'SINAFECTAR'
+    )
     BEGIN
         PRINT 'Proceso de Cancelación CFDI de Cancelación Turismo';
         DECLARE @Ok INT,
@@ -874,6 +882,9 @@ BEGIN
                                              @Ok = @Ok OUTPUT,                                 -- int
                                              @OkRef = @OkRef OUTPUT,                           -- varchar(255)
                                              @EstatusCancelacion = @EstatusCancelacion OUTPUT; -- varchar(10)
+
+            PRINT 'Resultado Cancelación CFDI: ' + 'Codigo = ' + CAST(ISNULL(@Ok, -1) AS VARCHAR(255)) + ', Mensaje = '
+                  + ISNULL(@OkRef, '');
         END TRY
         BEGIN CATCH
             SELECT @iError = ERROR_NUMBER(),

@@ -869,6 +869,12 @@ BEGIN
         DECLARE @Ok INT,
                 @OkRef VARCHAR(255),
                 @EstatusCancelacion VARCHAR(10);
+
+        SELECT @Aplica = cd.Aplica,
+               @AplicaID = cd.AplicaID
+        FROM dbo.CxcD AS cd
+        WHERE cd.ID = @RegresoID;
+
         SELECT TOP 1
             @a2ID = v.ID
         FROM dbo.Venta AS v

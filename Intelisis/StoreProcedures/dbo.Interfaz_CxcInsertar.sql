@@ -909,7 +909,7 @@ BEGIN
                                              CAST(
                                              (
                                                  SELECT ISNULL(@Ok, -1) AS CodigoError,
-                                                        ISNULL(@OkRef, 'Error no Identificado') AS DescrError
+                                                        ISNULL(@OkRef, 'Error no Identificado') AS DescError
                                                  FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
                                              ) AS VARCHAR(MAX)),
                                              '&lt;',

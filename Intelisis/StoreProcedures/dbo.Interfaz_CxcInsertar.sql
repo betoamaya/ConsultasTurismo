@@ -904,20 +904,12 @@ BEGIN
                                        @LogParametrosXml;
             SET @sError =
             (
-                SELECT REPLACE(
-                                  REPLACE(
-                                             CAST(
-                                             (
-                                                 SELECT ISNULL(@Ok, -1) AS CodigoError,
-                                                        ISNULL(@OkRef, 'Error no Identificado') AS DescError
-                                                 FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
-                                             ) AS VARCHAR(MAX)),
-                                             '&lt;',
-                                             '<'
-                                         ),
-                                  '&gt;',
-                                  '>'
-                              )
+                SELECT CAST(
+                       (
+                           SELECT ISNULL(@Ok, -1) AS CodigoError,
+                                  ISNULL(@OkRef, 'Error no Identificado') AS DescError
+                           FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
+                       ) AS VARCHAR(MAX))
             );
             SELECT ID = c.ID,
                    MovID = c.MovID,

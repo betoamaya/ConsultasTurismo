@@ -902,13 +902,12 @@ BEGIN
 
 
         /*---Hard-Code---*/
-        IF RTRIM(@AplicaID) IN ( 'TVE138521' )
+        IF RTRIM(@AplicaID) IN ( 'TVE138537', 'TVE138590' )
         BEGIN
             PRINT '**/Hard-Code/***';
             SELECT @Ok = 213,
                    @EstatusCancelacion = '213',
                    @OkRef = 'La solicitud de cancelación fue rechazada por el receptor.';
-            RETURN;
         END;
 
         IF @EstatusCancelacion NOT IN ( '201', '202' )

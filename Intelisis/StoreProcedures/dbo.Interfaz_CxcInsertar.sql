@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	06/11/2018
+-- Ultimo Cambio:	08/11/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -30,7 +30,7 @@ ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
     @ID AS INT = NULL OUTPUT,
     @MovID AS VARCHAR(MAX) = NULL OUTPUT,
     @Estatus AS CHAR(15) = NULL OUTPUT,
-    @CFDFlexEstatus AS VARCHAR(15) = NULL OUTPUT,
+    @CFDFlexEstatus AS VARCHAR(MAX) = NULL OUTPUT,
     @CFDXml AS VARCHAR(MAX) = NULL OUTPUT,
     @noCertificado AS VARCHAR(MAX) = NULL OUTPUT,
     @Sello AS VARCHAR(MAX) = NULL OUTPUT,
@@ -869,6 +869,14 @@ BEGIN
         DECLARE @Ok INT,
                 @OkRef VARCHAR(255),
                 @EstatusCancelacion VARCHAR(10);
+
+        SELECT @Aplica = cd.Aplica,
+               @AplicaID = cd.AplicaID
+        FROM dbo.CxcD AS cd
+        WHERE cd.ID = @RegresoID;
+
+
+
         SELECT TOP 1
             @a2ID = v.ID
         FROM dbo.Venta AS v
@@ -891,6 +899,17 @@ BEGIN
                    @sError
                        = '(sp ' + ERROR_PROCEDURE() + ', ln ' + CAST(ERROR_LINE() AS VARCHAR) + ') ' + ERROR_MESSAGE();
         END CATCH;
+
+
+        /*---Hard-Code---*/
+        IF RTRIM(@AplicaID) IN ( 'TVE138537', 'TVE138590' )
+        BEGIN
+            PRINT '**/Hard-Code/***';
+            SELECT @Ok = 213,
+                   @EstatusCancelacion = '213',
+                   @OkRef = 'La solicitud de cancelación fue rechazada por el receptor.';
+        END;
+
         IF @EstatusCancelacion NOT IN ( '201', '202' )
            OR @EstatusCancelacion IS NULL
         BEGIN
@@ -904,20 +923,12 @@ BEGIN
                                        @LogParametrosXml;
             SET @sError =
             (
-                SELECT REPLACE(
-                                  REPLACE(
-                                             CAST(
-                                             (
-                                                 SELECT ISNULL(@Ok, -1) AS CodigoError,
-                                                        ISNULL(@OkRef, 'Error no Identificado') AS DescrError
-                                                 FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
-                                             ) AS VARCHAR(MAX)),
-                                             '&lt;',
-                                             '<'
-                                         ),
-                                  '&gt;',
-                                  '>'
-                              )
+                SELECT CAST(
+                       (
+                           SELECT ISNULL(@Ok, -1) AS CodigoError,
+                                  ISNULL(@OkRef, 'Error no Identificado') AS DescError
+                           FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
+                       ) AS VARCHAR(MAX))
             );
             SELECT ID = c.ID,
                    MovID = c.MovID,
@@ -1503,4 +1514,5 @@ BEGIN
         END;
     END;
 END;
+
 GO

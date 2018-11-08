@@ -1,9 +1,9 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	07/11/2018
+-- Ultimo Cambio:	08/11/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -875,6 +875,8 @@ BEGIN
         FROM dbo.CxcD AS cd
         WHERE cd.ID = @RegresoID;
 
+
+
         SELECT TOP 1
             @a2ID = v.ID
         FROM dbo.Venta AS v
@@ -897,6 +899,18 @@ BEGIN
                    @sError
                        = '(sp ' + ERROR_PROCEDURE() + ', ln ' + CAST(ERROR_LINE() AS VARCHAR) + ') ' + ERROR_MESSAGE();
         END CATCH;
+
+
+        /*---Hard-Code---*/
+        IF RTRIM(@AplicaID) IN ( 'TVE138521' )
+        BEGIN
+            PRINT '**/Hard-Code/***';
+            SELECT @Ok = 213,
+                   @EstatusCancelacion = '213',
+                   @OkRef = 'La solicitud de cancelación fue rechazada por el receptor.';
+            RETURN;
+        END;
+
         IF @EstatusCancelacion NOT IN ( '201', '202' )
            OR @EstatusCancelacion IS NULL
         BEGIN

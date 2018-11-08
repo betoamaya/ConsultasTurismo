@@ -1,9 +1,9 @@
-SET QUOTED_IDENTIFIER ON;
-SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON
+SET ANSI_NULLS ON
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	06/11/2018
+-- Ultimo Cambio:	07/11/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -30,7 +30,7 @@ ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
     @ID AS INT = NULL OUTPUT,
     @MovID AS VARCHAR(MAX) = NULL OUTPUT,
     @Estatus AS CHAR(15) = NULL OUTPUT,
-    @CFDFlexEstatus AS VARCHAR(15) = NULL OUTPUT,
+    @CFDFlexEstatus AS VARCHAR(MAX) = NULL OUTPUT,
     @CFDXml AS VARCHAR(MAX) = NULL OUTPUT,
     @noCertificado AS VARCHAR(MAX) = NULL OUTPUT,
     @Sello AS VARCHAR(MAX) = NULL OUTPUT,
@@ -1501,4 +1501,5 @@ BEGIN
         END;
     END;
 END;
+
 GO

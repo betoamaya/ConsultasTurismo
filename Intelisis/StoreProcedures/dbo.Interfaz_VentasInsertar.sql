@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	12/11/2018
+-- Ultimo Cambio:	31/10/2018
 -- Descripción:		Insersión y afectación de facturas de credito y venta.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_VentasInsertar]
@@ -766,7 +766,7 @@ BEGIN
                     ON ta.ID = v.ID;
         END;
         /*Caso Refacturacion TI y VE*/
-        IF @Mov IN ( 'Factura TranspInd', 'FACT.VE.GRAVADO', 'CFDI SIN VIAJE GRAV' )
+        IF @Mov IN ( 'Factura TranspInd', 'FACT.VE.GRAVADO' )
            AND ISNULL(@MovRelacionados, '') <> ''
         BEGIN
             PRINT 'Relacionando la factura por sutitución';

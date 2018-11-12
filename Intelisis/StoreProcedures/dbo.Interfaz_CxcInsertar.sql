@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	08/11/2018
+-- Ultimo Cambio:	31/10/2018
 -- Descripción:		Insersión y afectación de facturas de Anticipo y Otros Movimientos CXC.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
@@ -30,7 +30,7 @@ ALTER PROCEDURE [dbo].[Interfaz_CxcInsertar]
     @ID AS INT = NULL OUTPUT,
     @MovID AS VARCHAR(MAX) = NULL OUTPUT,
     @Estatus AS CHAR(15) = NULL OUTPUT,
-    @CFDFlexEstatus AS VARCHAR(MAX) = NULL OUTPUT,
+    @CFDFlexEstatus AS VARCHAR(15) = NULL OUTPUT,
     @CFDXml AS VARCHAR(MAX) = NULL OUTPUT,
     @noCertificado AS VARCHAR(MAX) = NULL OUTPUT,
     @Sello AS VARCHAR(MAX) = NULL OUTPUT,
@@ -855,115 +855,6 @@ BEGIN
         END;
     END;
 
-    IF (RTRIM(@Mov) = 'CANCELACION TURISMO')
-       AND EXISTS
-    (
-        SELECT c.Codigo
-        FROM dbo.Cxc c
-        WHERE c.Codigo = @Codigo
-              AND c.ID = @RegresoID
-              AND c.Estatus = 'SINAFECTAR'
-    )
-    BEGIN
-        PRINT 'Proceso de Cancelación CFDI de Cancelación Turismo';
-        DECLARE @Ok INT,
-                @OkRef VARCHAR(255),
-                @EstatusCancelacion VARCHAR(10);
-
-        SELECT @Aplica = cd.Aplica,
-               @AplicaID = cd.AplicaID
-        FROM dbo.CxcD AS cd
-        WHERE cd.ID = @RegresoID;
-
-
-
-        SELECT TOP 1
-            @a2ID = v.ID
-        FROM dbo.Venta AS v
-        WHERE v.Empresa = RTRIM(@Empresa)
-              AND v.Mov = RTRIM(@Aplica)
-              AND v.MovID = RTRIM(@AplicaID);
-        BEGIN TRY
-            EXEC dbo.spCFDCancelacionEstatus @Empresa = @Empresa,                              -- varchar(5)
-                                             @Modulo = 'VTAS',                                 -- varchar(5)
-                                             @ModuloID = @a2ID,                                -- int
-                                             @Ok = @Ok OUTPUT,                                 -- int
-                                             @OkRef = @OkRef OUTPUT,                           -- varchar(255)
-                                             @EstatusCancelacion = @EstatusCancelacion OUTPUT; -- varchar(10)
-
-            PRINT 'Resultado Cancelación CFDI: ' + 'Codigo = ' + CAST(ISNULL(@Ok, -1) AS VARCHAR(255)) + ', Mensaje = '
-                  + ISNULL(@OkRef, '');
-        END TRY
-        BEGIN CATCH
-            SELECT @iError = ERROR_NUMBER(),
-                   @sError
-                       = '(sp ' + ERROR_PROCEDURE() + ', ln ' + CAST(ERROR_LINE() AS VARCHAR) + ') ' + ERROR_MESSAGE();
-        END CATCH;
-
-
-        /*---Hard-Code---*/
-        IF RTRIM(@AplicaID) IN ( 'TVE138537', 'TVE138590' )
-        BEGIN
-            PRINT '**/Hard-Code/***';
-            SELECT @Ok = 213,
-                   @EstatusCancelacion = '213',
-                   @OkRef = 'La solicitud de cancelación fue rechazada por el receptor.';
-        END;
-
-        IF @EstatusCancelacion NOT IN ( '201', '202' )
-           OR @EstatusCancelacion IS NULL
-        BEGIN
-            SET @sError
-                = 'Error al cancelar el CFDI: ' + 'Error = ' + CAST(ISNULL(@Ok, -1) AS VARCHAR(255)) + ', Mensaje = '
-                  + ISNULL(@OkRef, '') + '. Intente nuevamente.';
-            EXEC Interfaz_LogsInsertar 'Interfaz_CxcInsertar',
-                                       'Error',
-                                       @sError,
-                                       @Usuario,
-                                       @LogParametrosXml;
-            SET @sError =
-            (
-                SELECT CAST(
-                       (
-                           SELECT ISNULL(@Ok, -1) AS CodigoError,
-                                  ISNULL(@OkRef, 'Error no Identificado') AS DescError
-                           FOR XML RAW('Fila'), ROOT('Cancelacion'), TYPE
-                       ) AS VARCHAR(MAX))
-            );
-            SELECT ID = c.ID,
-                   MovID = c.MovID,
-                   Estatus = c.Estatus,
-                   CFDFlexEstatus = @sError,
-                   CFDXML = NULL,
-                   noCertificado = NULL,
-                   Sello = NULL,
-                   SelloSAT = NULL,
-                   TFDCadenaOriginal = NULL,
-                   UUID = NULL,
-                   FechaTimbrado = NULL,
-                   noCertificadoSAT = NULL
-            FROM dbo.Cxc c
-            WHERE c.ID = @RegresoID;
-
-            SELECT @ID = c.ID,
-                   @MovID = c.MovID,
-                   @Estatus = c.Estatus,
-                   @CFDFlexEstatus = @sError,
-                   @CFDXml = NULL,
-                   @noCertificado = NULL,
-                   @Sello = NULL,
-                   @SelloSAT = NULL,
-                   @TFDCadenaOriginal = NULL,
-                   @UUID = NULL,
-                   @FechaTimbrado = NULL,
-                   @noCertificadoSAT = NULL
-            FROM dbo.Cxc c
-            WHERE c.ID = @RegresoID;
-
-            RETURN;
-        END;
-    END;
-
     --********************************************************************
     --		AFECTAR
     --********************************************************************
@@ -1514,5 +1405,4 @@ BEGIN
         END;
     END;
 END;
-
 GO

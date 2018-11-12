@@ -80,3 +80,6 @@ EXEC dbo.Interfaz_CxcInsertar @Empresa = 'TUN',                                 
 --427950	NULL	SINAFECTAR	<Cancelacion><Fila CodigoError="211" DescError="La cancelación está en proceso."/></Cancelacion>
 --427950	NULL	SINAFECTAR	<Cancelacion><Fila CodigoError="213" DescError="La solicitud de cancelación fue rechazada por el receptor."/></Cancelacion>
 /*============================================*/
+
+
+

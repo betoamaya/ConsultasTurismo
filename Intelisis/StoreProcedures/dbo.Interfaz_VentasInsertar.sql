@@ -3,7 +3,7 @@ SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	31/10/2018
+-- Ultimo Cambio:	13/11/2018
 -- Descripción:		Insersión y afectación de facturas de credito y venta.
 -- =============================================
 ALTER PROCEDURE [dbo].[Interfaz_VentasInsertar]

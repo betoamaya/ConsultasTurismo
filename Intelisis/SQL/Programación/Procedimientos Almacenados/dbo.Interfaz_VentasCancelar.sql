@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON;
-SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON
+SET ANSI_NULLS ON
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
 -- Ultimo Cambio:	22/10/2018
--- Descripci贸n:		Cancelaci贸n de Venta.
+-- Descripci髇:		Cancelaci髇 de Venta.
 -- =============================================
-ALTER PROCEDURE [dbo].[Interfaz_VentasCancelar]
+CREATE PROCEDURE [dbo].[Interfaz_VentasCancelar]
     @IDIntelisis AS INT,
     @MovIdIntelisis AS VARCHAR(20),
     @Usuario AS CHAR(10),
@@ -33,7 +33,7 @@ SET @LogParametrosXml =
 );
 
 EXEC dbo.Interfaz_LogsInsertar @SP = 'Interfaz_VentasCancelar', -- varchar(255)
-                               @Tipo = 'Ejecuci贸n',             -- varchar(255)
+                               @Tipo = 'Ejecuci髇',             -- varchar(255)
                                @DetalleError = '',              -- varchar(max)
                                @Usuario = @Usuario,             -- varchar(10)
                                @Parametros = @LogParametrosXml; -- xml
@@ -100,7 +100,7 @@ IF RTRIM(@MovIdIntelisis) IN ( 'TVE138529', 'TVE138538' )
 BEGIN
     PRINT '**/Hard-Code/***';
     SELECT @iError = 213,
-           @sError = 'La solicitud de cancelaci贸n fue rechazada por el receptor.';
+           @sError = 'La solicitud de cancelaci髇 fue rechazada por el receptor.';
     RETURN;
 END;
 
@@ -170,4 +170,5 @@ SELECT @MovId = A.MovID,
 FROM dbo.Venta AS A
 WHERE A.ID = @IDIntelisis;
 RETURN;
+
 GO

@@ -13,6 +13,7 @@ WHERE d.Mov = 'Solicitud Deposito'
                          WHERE c.Mov = 'Solicitud Deposito'
                                AND c.Estatus = 'PENDIENTE'
                                AND c.Usuario = 'SITTI'
+                               AND c.Empresa = 'TUN'
                      );
 
 

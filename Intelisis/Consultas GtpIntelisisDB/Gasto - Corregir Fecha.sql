@@ -12,12 +12,12 @@ BEGIN TRAN;
 UPDATE dbo.GastoD
 SET Fecha = '2018-10-08 00:00:00.000'
 WHERE ID = 226412
-      AND Renglon IN (38912,43008);
+      AND Renglon IN ( 38912, 43008 );
 
 UPDATE dbo.GastoD
 SET Fecha = '2018-10-05 00:00:00.000'
 WHERE ID = 226412
-      AND Renglon IN (40960,45056);
+      AND Renglon IN ( 40960, 45056 );
 /*
 COMMIT;
 ROLLBACK;

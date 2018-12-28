@@ -23,7 +23,7 @@ ORDER BY il.Fecha DESC;
 </Parametros>
 */
 
---Error al aplicar el movimiento de depósito de Intelisis: Error30230, Mensaje = 
+--Error al aplicar el movimiento de dep?sito de Intelisis: Error30230, Mensaje = 
 /*Buscar mensaje de error*/
 
 SELECT *
@@ -69,14 +69,3 @@ WHERE il.SP = 'Interfaz_tesoreriaDepositarDetalle'
       AND il.Fecha
       BETWEEN GETDATE() - 2 AND GETDATE()
 ORDER BY il.Fecha DESC;
-
-/******NO FUE CONCUIDA POR INTERFAZ***********/
-
-SELECT d.ID, d.Mov, d.MovID, d.FechaEmision, d.Estatus, d.Importe, d.Impuestos, d.Usuario, d.OrigenTipo, d.Origen, d.OrigenID FROM dbo.Dinero AS d WHERE d.Mov = 'Deposito' AND d.MovID = '1369055'
-
-/*
-====================================================================================================================================
-ID		Mov			MovID	FechaEmision			Estatus		Importe	Impuestos	Usuario	OrigenTipo	Origen				OrigenID
-1674212	Deposito    1369055	2018-10-31 00:00:00.000	CONCLUIDO	7650.00	0.00		JPADRON	DIN			Solicitud Deposito	1543599
-====================================================================================================================================
-*/

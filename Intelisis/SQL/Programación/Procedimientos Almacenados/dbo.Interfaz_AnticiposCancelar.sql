@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	19/10/2018
+-- Ultimo Cambio:	28/12/2018
 -- Descripción:		Cancelación de Anticipos.
 -- =============================================
-CREATE PROCEDURE [dbo].[Interfaz_AnticiposCancelar]
+ALTER PROCEDURE [dbo].[Interfaz_AnticiposCancelar]
     @IDIntelisis AS INT,
     @MovIdIntelisis AS VARCHAR(20),
     @Usuario AS CHAR(10),
@@ -95,15 +95,6 @@ BEGIN
     RETURN;
 END;
 
-/*---Hard-Code---*/
-IF RTRIM(@MovIdIntelisis) IN ( 'TVE138521' )
-BEGIN
-    PRINT '**/Hard-Code/***';
-    SELECT @iError = 213,
-           @sError = 'La solicitud de cancelación fue rechazada por el receptor.';
-    RETURN;
-END;
-
 -- *************************************************************************
 --	Pproceso
 -- *************************************************************************
@@ -130,6 +121,7 @@ BEGIN TRY
     PRINT 'Codigo de Resultado: ' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' ' + RTRIM(ISNULL(@sError, ''));
 END TRY
 BEGIN CATCH
+    PRINT 'Se detecto un Error';
     SELECT @iError = ERROR_NUMBER(),
            @sError = '(sp ' + ERROR_PROCEDURE() + ', ln ' + CAST(ERROR_LINE() AS VARCHAR) + ') ' + ERROR_MESSAGE();
 END CATCH;
@@ -145,7 +137,10 @@ BEGIN
     SET @mensajeError
         = 'Error al aplicar el movimiento de Intelisis: ' + 'Error = ' + CAST(ISNULL(@iError, -1) AS VARCHAR(255))
           + ', Mensaje = ' + ISNULL(@sError, '') + ', el movimiento no fue cancelado. Intente nuevamente.';
-
+    IF @iError = 0
+    BEGIN
+        SET @iError = -1;
+    END;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_AnticiposCancelar',    -- varchar(255)
                                    @Tipo = 'Error',                 -- varchar(255)
                                    @DetalleError = @sError,         -- varchar(max)

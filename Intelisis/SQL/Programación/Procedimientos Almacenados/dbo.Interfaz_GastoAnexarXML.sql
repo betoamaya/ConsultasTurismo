@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON;
-SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON
+SET ANSI_NULLS ON
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
 -- Ultimo Cambio:	31/10/2018
--- Descripci贸n:		Anexar XML
+-- Descripci髇:		Anexar XML
 -- =============================================
-ALTER PROCEDURE [dbo].[Interfaz_GastoAnexarXML]
+CREATE PROCEDURE [dbo].[Interfaz_GastoAnexarXML]
     @Usuario CHAR(10),
     @Id INT,
     @PathDestino VARCHAR(255),
@@ -32,7 +32,7 @@ SET @LogParametrosXML =
 );
 
 EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                               'Inserci贸n',
+                               'Inserci髇',
                                '',
                                @Usuario,
                                @LogParametrosXML;
@@ -62,7 +62,7 @@ BEGIN
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;
@@ -102,11 +102,11 @@ FROM @Result_SP rs;
 
 IF @Usuario <> 'SITTI'
 BEGIN
-    SET @MensajeError = 'Usuario no valido. Por favor, indique un Usuario valido para la ejecuci贸n de este proceso.';
+    SET @MensajeError = 'Usuario no valido. Por favor, indique un Usuario valido para la ejecuci髇 de este proceso.';
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;
@@ -127,7 +127,7 @@ BEGIN
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;
@@ -142,7 +142,7 @@ BEGIN
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;
@@ -156,7 +156,7 @@ BEGIN
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;
@@ -171,7 +171,7 @@ BEGIN
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;
@@ -185,7 +185,7 @@ BEGIN
     SELECT @NumErr = 0,
            @Descripcion = @MensajeError;
     EXEC dbo.Interfaz_LogsInsertar 'Interfaz_GastoAnexarXML',
-                                   'Error de Validaci贸n',
+                                   'Error de Validaci髇',
                                    @MensajeError,
                                    @Usuario,
                                    @LogParametrosXML;

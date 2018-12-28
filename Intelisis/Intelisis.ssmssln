@@ -3,14 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # SQL Server Management Studio Solution File, Format Version 14.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "Consultas GtpIntelisisDB", "Consultas GtpIntelisisDB\Consultas GtpIntelisisDB.ssmssqlproj", "{11422A9B-E692-49AB-89C9-DDEA4F4CB654}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Programación", "Programación", "{57255BCF-B343-4A75-BB5E-4BF08A047BCD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Procedimientos Almacenados", "Procedimientos Almacenados", "{3D1DEFD8-C8AE-47F0-B149-D0F6E7D888C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Default|Default = Default|Default
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{05465A03-AA1D-4DD2-A61B-FE0F56593386}.Default|Default.ActiveCfg = Default
+		{11422A9B-E692-49AB-89C9-DDEA4F4CB654}.Default|Default.ActiveCfg = Default
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D1DEFD8-C8AE-47F0-B149-D0F6E7D888C5} = {57255BCF-B343-4A75-BB5E-4BF08A047BCD}
 	EndGlobalSection
 EndGlobal

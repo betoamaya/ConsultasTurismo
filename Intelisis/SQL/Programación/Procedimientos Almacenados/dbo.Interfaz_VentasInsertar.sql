@@ -1,12 +1,12 @@
-SET QUOTED_IDENTIFIER ON
-SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 -- =============================================
 -- Responsable:		Roberto Amaya
--- Ultimo Cambio:	13/11/2018
+-- Ultimo Cambio:	03/01/2019
 -- Descripción:		Insersión y afectación de facturas de credito y venta.
 -- =============================================
-CREATE PROCEDURE [dbo].[Interfaz_VentasInsertar]
+ALTER PROCEDURE [dbo].[Interfaz_VentasInsertar]
     @Empresa AS CHAR(5),
     @Mov AS CHAR(20),
     @FechaEmision AS SMALLDATETIME,
@@ -293,7 +293,7 @@ BEGIN
         SET @bMovValido = 1;
         --SET @DescripcionExtra = 'TI  SERVICIO DE TRANSPORTE DE PERSONAL';
         SET @DescripcionExtra = '';
-        IF (@Concepto <> 'T.INDUSTRIAL 10%' AND @Concepto <> 'T.INDUSTRIAL 15%')
+        IF (@Concepto NOT IN ( 'T.INDUSTRIAL 10%', 'T.INDUSTRIAL 15%', 'T.INDUSTRIAL 8%' ))
         BEGIN
             SET @sError
                 = 'Concepto no valido. El concepto se valida de acuerdo al movimiento y usuario indicado. '
@@ -315,6 +315,14 @@ BEGIN
             UPDATE @T_PartidasVtas
             SET Articulo = 'TI-15',
                 TasaImpuesto = 16;
+        END;
+        ELSE IF (@Concepto = 'T.INDUSTRIAL 8%')
+        BEGIN
+            SELECT @Condicion = 'Credito',
+                   @Impuesto1 = 8;
+            UPDATE @T_PartidasVtas
+            SET Articulo = 'TI-8%',
+                TasaImpuesto = 8;
         END;
     END;
 

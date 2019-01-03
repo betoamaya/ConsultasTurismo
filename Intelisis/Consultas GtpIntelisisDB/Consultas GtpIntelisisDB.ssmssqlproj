@@ -43,6 +43,12 @@
           <AssociatedConnUserName>Roberto</AssociatedConnUserName>
           <FullPath>Tesoreria - Error Control de Ingresos.sql</FullPath>
         </FileNode>
+        <FileNode Name="Venta - TI.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GTPINTELISISDB:False:Roberto</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GTPINTELISISDB</AssociatedConnSrvName>
+          <AssociatedConnUserName>Roberto</AssociatedConnUserName>
+          <FullPath>Venta - TI.sql</FullPath>
+        </FileNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Varios" Type="3" Sorted="true">

@@ -8,6 +8,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Programación", "Programación", "{57255BCF-B343-4A75-BB5E-4BF08A047BCD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Procedimientos Almacenados", "Procedimientos Almacenados", "{3D1DEFD8-C8AE-47F0-B149-D0F6E7D888C5}"
+	ProjectSection(SolutionItems) = preProject
+		SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_AnticiposCancelar.sql = SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_AnticiposCancelar.sql
+		SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_CxcInsertar.sql = SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_CxcInsertar.sql
+		SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_GastoAnexarXML.sql = SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_GastoAnexarXML.sql
+		SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_VentasCancelar.sql = SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_VentasCancelar.sql
+		SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_VentasInsertar.sql = SQL\Programación\Procedimientos Almacenados\dbo.Interfaz_VentasInsertar.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

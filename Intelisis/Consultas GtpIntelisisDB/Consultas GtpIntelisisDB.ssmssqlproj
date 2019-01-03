@@ -18,7 +18,32 @@
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Consultas" Type="0" Sorted="true">
-      <Items />
+      <Items>
+        <FileNode Name="Cxc - Cancelar Anticipo.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GTPINTELISISDB:False:Roberto</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GTPINTELISISDB</AssociatedConnSrvName>
+          <AssociatedConnUserName>Roberto</AssociatedConnUserName>
+          <FullPath>Cxc - Cancelar Anticipo.sql</FullPath>
+        </FileNode>
+        <FileNode Name="Gasto - Corregir Fecha.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GTPINTELISISDB:False:Roberto</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GTPINTELISISDB</AssociatedConnSrvName>
+          <AssociatedConnUserName>Roberto</AssociatedConnUserName>
+          <FullPath>Gasto - Corregir Fecha.sql</FullPath>
+        </FileNode>
+        <FileNode Name="Tesoreria - Consultar Solicitudes Pendientes.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GTPINTELISISDB:False:Roberto</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GTPINTELISISDB</AssociatedConnSrvName>
+          <AssociatedConnUserName>Roberto</AssociatedConnUserName>
+          <FullPath>Tesoreria - Consultar Solicitudes Pendientes.sql</FullPath>
+        </FileNode>
+        <FileNode Name="Tesoreria - Error Control de Ingresos.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:GTPINTELISISDB:False:Roberto</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>GTPINTELISISDB</AssociatedConnSrvName>
+          <AssociatedConnUserName>Roberto</AssociatedConnUserName>
+          <FullPath>Tesoreria - Error Control de Ingresos.sql</FullPath>
+        </FileNode>
+      </Items>
     </LogicalFolder>
     <LogicalFolder Name="Varios" Type="3" Sorted="true">
       <Items />

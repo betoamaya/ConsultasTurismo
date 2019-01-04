@@ -4,15 +4,15 @@ FROM dbo.Gasto AS g
     INNER JOIN dbo.GastoD AS gd
         ON gd.ID = g.ID
 WHERE g.Mov = 'Solicitud Gasto'
-      AND g.MovID = '581336'
+      AND g.MovID = '581428'
       AND g.Usuario = 'SITTI';
 
 GO
 BEGIN TRAN;
 UPDATE dbo.GastoD
-SET Fecha = '2018-12-29 00:00:00.000'
-WHERE ID = 245695
-      AND Renglon IN ( 4096 );
+SET Fecha = '2018-12-22 00:00:00.000'
+WHERE ID = 246158
+      AND Renglon IN ( 14336 );
 /*
 COMMIT;
 ROLLBACK;

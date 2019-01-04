@@ -41,4 +41,5 @@ FROM dbo.Dinero AS d
         ON p.IdCFD = cii.IdCFD
 WHERE d.Mov = 'Solicitud Deposito'
       AND d.Estatus = 'PENDIENTE'
-      AND d.Usuario = 'SITTI';
+      AND d.Usuario = 'SITTI'
+	  AND d.OrigenID NOT IN ('TVE142979');

@@ -115,6 +115,7 @@ BEGIN
     -- VARIBLES PARA MENSAJES DE ERROR
     DECLARE @iError AS INT,
             @sError AS VARCHAR(MAX),
+            @sMensajeCompleto AS VARCHAR(MAX),
             @bMovValido AS BIT;
 
     DECLARE @T_PartidasVtas TABLE
@@ -154,14 +155,14 @@ BEGIN
 
     IF ISNULL(@PartidasVtas, '') = ''
     BEGIN
-		IF RTRIM(@Concepto) IN ('T.INDUSTRIAL 8%')
-		BEGIN
-		   SELECT @TasaImpuesto = 8; 
-		END
-		ELSE
+        IF RTRIM(@Concepto) IN ( 'T.INDUSTRIAL 8%' )
         BEGIN
-			SELECT @TasaImpuesto = 16;    
-        END
+            SELECT @TasaImpuesto = 8;
+        END;
+        ELSE
+        BEGIN
+            SELECT @TasaImpuesto = 16;
+        END;
         DECLARE @xctag1 FLOAT,
                 @xctag2 FLOAT;
         SET @xctag1 = @TasaImpuesto / 100;
@@ -849,20 +850,19 @@ BEGIN
                            @iError OUTPUT,
                            @sError OUTPUT;
 
-            PRINT 'Retorno SPAfectar: ' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' ' + RTRIM(ISNULL(@sError, ''));
-
-            SELECT @sError = ml.Descripcion
+            SELECT @sMensajeCompleto = ml.Descripcion
             FROM dbo.MensajeLista ml
             WHERE ml.Mensaje = @iError;
 
-            PRINT 'Codigo de Resultado: ' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' ' + RTRIM(ISNULL(@sError, ''));
+            PRINT 'Retorno SPAfectar: ' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' '
+                  + RTRIM(ISNULL(@sMensajeCompleto, '')) + ' ' + RTRIM(ISNULL(@sError, ''));
 
         END TRY
         BEGIN CATCH
-            SELECT --@iError = ERROR_NUMBER() ,
-                @sError
-                = '(sp ' + ISNULL(ERROR_PROCEDURE(), '') + ', ln ' + ISNULL(CAST(ERROR_LINE() AS VARCHAR), '') + ') '
-                  + ISNULL(ERROR_MESSAGE(), '');
+            SELECT @iError = ERROR_NUMBER(),
+                   @sError
+                       = '(sp ' + ISNULL(ERROR_PROCEDURE(), '') + ', ln ' + ISNULL(CAST(ERROR_LINE() AS VARCHAR), '')
+                         + ') ' + ISNULL(ERROR_MESSAGE(), '');
         END CATCH;
 
         IF EXISTS
@@ -873,17 +873,14 @@ BEGIN
                   AND Estatus = 'SINAFECTAR'
         )
         BEGIN
+            SELECT @sMensajeCompleto = ml.Descripcion
+            FROM dbo.MensajeLista ml
+            WHERE ml.Mensaje = @iError;
+
             SET @sError
                 = 'Error al aplicar el movimiento de Intelisis: ' + 'Error = '
-                  + CAST(ISNULL(@iError, -1) AS VARCHAR(255))
-                  + ISNULL(
-                    (
-                        SELECT ' - ' + RTRIM(Descripcion)
-                        FROM dbo.MensajeLista
-                        WHERE Mensaje = @iError
-                    ),
-                    ''
-                          ) + ', Mensaje = ' + ISNULL(@sError, '') + ',Movimiento SIN AFECTAR, intente nuevamente';
+                  + CAST(ISNULL(@iError, -1) AS VARCHAR(255)) + ' ' + RTRIM(ISNULL(@sMensajeCompleto, ''))
+                  + ', Mensaje = ' + ISNULL(@sError, '') + ',Movimiento SIN AFECTAR, intente nuevamente';
             EXEC Interfaz_LogsInsertar 'Interfaz_VentasInsertar',
                                        'Error',
                                        @sError,
@@ -893,7 +890,8 @@ BEGIN
             RETURN;
         END;
     END;
-    SET @sError = NULL;
+    SELECT @sError = NULL,
+           @sMensajeCompleto = NULL;
     IF EXISTS
     (
         SELECT v.CFDFlexEstatus
@@ -919,9 +917,13 @@ BEGIN
                                @Ok = @iError OUTPUT,
                                @OkRef = @sError OUTPUT;
 
+            SELECT @sMensajeCompleto = ml.Descripcion
+            FROM dbo.MensajeLista ml
+            WHERE ml.Mensaje = @iError;
+
             SET @sError
-                = 'Resultado de Timbrado :' + RTRIM(ISNULL(CAST(@iError AS INT), 0)) + ' '
-                  + RTRIM(ISNULL(@sError, 'CONCLUIDO'));
+                = 'Resultado de Timbrado :' + CAST(ISNULL(@iError, 0) AS VARCHAR) + ' '
+                  + RTRIM(ISNULL(@sMensajeCompleto, '')) + ' ' + RTRIM(ISNULL(@sError, ''));
             PRINT @sError;
 
             EXEC Interfaz_LogsInsertar 'Interfaz_VentasInsertar',
@@ -942,7 +944,7 @@ BEGIN
         BEGIN
             SET @sError
                 = 'Error al timbrar el movimiento de Intelisis: ' + 'Error = '
-                  + CAST(ISNULL(@iError, -1) AS VARCHAR(255)) + ', Mensaje = ' + ISNULL(@sError, '')
+                  + CAST(ISNULL(@iError, -1) AS VARCHAR(255)) + ', Mensaje = ' + RTRIM(ISNULL(@sError, ''))
                   + '. Intente nuevamente.';
             EXEC Interfaz_LogsInsertar 'Interfaz_VentasInsertar',
                                        'Error',

@@ -154,7 +154,14 @@ BEGIN
 
     IF ISNULL(@PartidasVtas, '') = ''
     BEGIN
-        SELECT @TasaImpuesto = 16;
+		IF RTRIM(@Concepto) IN ('T.INDUSTRIAL 8%')
+		BEGIN
+		   SELECT @TasaImpuesto = 8; 
+		END
+		ELSE
+        BEGIN
+			SELECT @TasaImpuesto = 16;    
+        END
         DECLARE @xctag1 FLOAT,
                 @xctag2 FLOAT;
         SET @xctag1 = @TasaImpuesto / 100;
@@ -321,7 +328,7 @@ BEGIN
             SELECT @Condicion = 'Credito',
                    @Impuesto1 = 8;
             UPDATE @T_PartidasVtas
-            SET Articulo = 'TI-8%',
+            SET Articulo = 'TI-08',
                 TasaImpuesto = 8;
         END;
     END;
